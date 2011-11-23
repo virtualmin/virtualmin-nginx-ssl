@@ -5,6 +5,11 @@ use Time::Local;
 require 'virtualmin-nginx-ssl-lib.pl';
 our (%text, %config, $module_name, %access);
 
+# This hack is needed so that &module::text calls work .. sorry :-(
+%text = ( &load_language("virtual-server"),
+	  &load_language("virtualmin-nginx"),
+	  %text );
+
 # feature_name()
 # Returns a short name for this feature
 sub feature_name
@@ -99,14 +104,14 @@ elsif ($port != $defport) {
 else {
 	# Neither .. but we can still do SSL, if there are no other domains
 	# with SSL on the same IP
-        local ($sslclash) = grep { $_->{'ip'} eq $d->{'ip'} &&
-                                   $_->{'ssl'} &&
-                                   $_->{'id'} ne $d->{'id'} }
-			         &virtual_server::list_domains();
+        my ($sslclash) = grep { $_->{'ip'} eq $d->{'ip'} &&
+                                $_->{'ssl'} &&
+                                $_->{'id'} ne $d->{'id'} }
+			      &virtual_server::list_domains();
         if ($sslclash && (!$oldd || !$oldd->{'ssl'})) {
 		# Clash .. but is the cert OK?
 		if (!&check_domain_certificate($d->{'dom'}, $sslclash)) {
-                        local @certdoms = &virtual_server::list_domain_certificate($sslclash);
+                        my @certdoms = &virtual_server::list_domain_certificate($sslclash);
                         return &virtual_server::text(
 				'setup_edepssl5', $d->{'ip'},
                                 join(", ", map { "<tt>$_</tt>" } @certdoms),
@@ -125,12 +130,343 @@ else {
 sub feature_setup
 {
 my ($d) = @_;
+my $tmpl = &virtual_server::get_template($d->{'template'});
+$d->{'web_sslport'} = $d->{'web_sslport'} || $tmpl->{'web_sslport'} || 443;
 
-# XXX check for shared cert
+# Find out if this domain will share a cert with another
+&virtual_server::find_chained_certificate($d);
 
-# XXX generate cert if needed
+# Create a self-signed cert and key, if needed
+&virtual_server::generate_default_certificate($d);
 
-# XXX add listen to non-SSL server
+# Add to the non-SSL server block
+&$virtual_server::first_print($text{'feat_setup'});
+&virtualmin_nginx::lock_all_config_files();
+my $server = &virtualmin_nginx::find_domain_server($d);
+if (!$server) {
+	&virtualmin_nginx::unlock_all_config_files();
+        &$virtual_server::second_print(
+                &virtualmin_nginx::text('feat_efind', $d->{'dom'}));
+        return 0;
+	}
+
+# Double-check cert and key
+my $certdata = &read_file_contents($d->{'ssl_cert'});
+my $keydata = &read_file_contents($d->{'ssl_key'});
+my $err = &virtual_server::validate_cert_format($certdata, 'cert');
+if ($err) {
+        &$virtual_server::second_print(
+		&virtual_server::text('setup_esslcert', $err));
+        return 0;
+        }
+$err = &virtual_server::validate_cert_format($keydata, 'key');
+if ($err) {
+        &$virtual_server::second_print(
+		&virtual_server::text('setup_esslkey', $err));
+        return 0;
+        }
+if ($d->{'ssl_ca'}) {
+        my $cadata = &read_file_contents($d->{'ssl_ca'});
+        $err = &virtual_server::validate_cert_format($cadata, 'ca');
+        if ($err) {
+                &$virtual_server::second_print(
+			&virtual_server::text('setup_esslca', $err));
+                return 0;
+                }
+        }
+$err = &virtual_server::check_cert_key_match($certdata, $keydata);
+if ($err) {
+        &$virtual_server::second_print(
+		&virtual_server::text('setup_esslmatch', $err));
+        return 0;
+        }
+
+# Add listen line
+# XXX multiple on same IP?
+my @listen = &virtualmin_nginx::find("listen", $server);
+my ($old_ip4) = grep { $_->{'words'}->[0] eq
+		       $d->{'ip'}.":".$d->{'web_sslport'} } @listen;
+my ($old_ip6) = grep { $_->{'words'}->[0] eq
+		       "[".$d->{'ip'}."]:".$d->{'web_sslport'} } @listen;
+if (!$old_ip4) {
+	push(@listen, { 'name' => 'listen',
+		        'words' => [ $d->{'ip'}.":".$d->{'web_sslport'},
+				     'default', 'ssl' ]});
+	}
+if (!$old_ip6 && $d->{'virt6'}) {
+	push(@listen, { 'name' => 'listen',
+		        'words' => [ "[".$d->{'ip6'}."]:".$d->{'web_sslport'},
+				     'default', 'ssl' ]});
+	}
+&virtualmin_nginx::save_directive($server, "listen", \@listen);
+
+# Enable SSL
+&virtualmin_nginx::save_directive($server, "ssl", [ "on" ]);
+&virtualmin_nginx::save_directive($server, "ssl_certificate",
+				  [ $d->{'ssl_cert'} ]);
+&virtualmin_nginx::save_directive($server, "ssl_certificate_key",
+				  [ $d->{'ssl_key'} ]);
+# XXX chained cert .. in same file as cert?
+
+&virtualmin_nginx::flush_config_file_lines();
+&virtualmin_nginx::unlock_all_config_files();
+&virtual_server::register_post_action(\&virtualmin_nginx::print_apply_nginx);
+
+# Add this IP and cert to Webmin/Usermin's SSL keys list
+if ($tmpl->{'web_webmin_ssl'} && $d->{'virt'}) {
+        &setup_ipkeys($d, \&get_miniserv_config, \&put_miniserv_config,
+                      \&virtual_server::restart_webmin);
+        }
+if ($tmpl->{'web_usermin_ssl'} && &foreign_installed("usermin") &&
+    $d->{'virt'}) {
+        &foreign_require("usermin", "usermin-lib.pl");
+        &setup_ipkeys($d, \&usermin::get_usermin_miniserv_config,
+                      \&usermin::put_usermin_miniserv_config,
+                      \&virtual_server::restart_usermin);
+        }
+
+# chained CA cert in from domain with same IP, if any
+# XXX
+
+&$virtual_server::second_print($virtual_server::text{'setup_done'});
+}
+
+# feature_modify(&domain, &old-domain)
+sub feature_modify
+{
+my ($d, $oldd) = @_;
+
+&virtualmin_nginx::lock_all_config_files();
+my $changed = 0;
+
+# Update port, if changed
+if ($d->{'web_sslport'} != $oldd->{'web_sslport'}) {
+	&$virtual_server::first_print($text{'feat_modifyport'});
+	my $server = &virtualmin_nginx::find_domain_server($d);
+	if (!$server) {
+		&$virtual_server::second_print(
+			&virtualmin_nginx::text('feat_efind', $d->{'dom'}));
+		return 0;
+		}
+	my @listen = &virtualmin_nginx::find("listen", $server);
+	my @newlisten;
+	foreach my $l (@listen) {
+		my @w = @{$l->{'words'}};
+		my $p = $w[0] =~ /:(\d+)$/ ? $1 : 80;
+		if ($p == $oldd->{'web_sslport'}) {
+			$w[0] =~ s/:\d+$//;
+			$w[0] .= ":".$d->{'web_sslport'};
+			}
+		push(@newlisten, { 'words' => \@w });
+		}
+	&virtualmin_nginx::save_directive($server, "listen", \@newlisten);
+	&$virtual_server::second_print(
+		$virtual_server::text{'setup_done'});
+	$changed++;
+	}
+
+# If IP has changed, maybe clear ssl_same field for cert sharing
+if ($d->{'ip'} ne $oldd->{'ip'} && $oldd->{'ssl_same'}) {
+        my ($sslclash) = grep { $_->{'ip'} eq $d->{'ip'} &&
+                                   $_->{'ssl'} &&
+                                   $_->{'id'} ne $d->{'id'} &&
+                                   !$_->{'ssl_same'} }
+				 &virtual_server::list_domains();
+        my $oldsslclash = &virtual_server::get_domain($oldd->{'ssl_same'});
+        if ($sslclash && $oldd->{'ssl_same'} eq $sslclash->{'id'}) {
+		# No need to change
+		}
+	elsif ($sslclash && &virtual_server::check_domain_certificate(
+				$d->{'dom'}, $sslclash)) {
+                # New domain with same cert
+                $d->{'ssl_cert'} = $sslclash->{'ssl_cert'};
+                $d->{'ssl_key'} = $sslclash->{'ssl_key'};
+                $d->{'ssl_same'} = $sslclash->{'id'};
+		# XXX chained func?
+                my $chained = &virtual_server::get_chained_certificate_file($sslclash);
+                $d->{'ssl_chain'} = $chained;
+                }
+        else {
+                # No domain has the same cert anymore - copy the one from the
+                # old sslclash domain
+                $d->{'ssl_cert'} =
+			&virtual_server::default_certificate_file($d, 'cert');
+                $d->{'ssl_key'} =
+			&virtual_server::default_certificate_file($d, 'key');
+                &virtual_server::copy_source_dest_as_domain_user($d,
+                        $oldsslclash->{'ssl_cert'}, $d->{'ssl_cert'});
+                &virtual_server::copy_source_dest_as_domain_user($d,
+                        $oldsslclash->{'ssl_key'}, $d->{'ssl_key'});
+                delete($d->{'ssl_same'});
+                }
+        }
+
+# Fix SSL cert file locations, if home has changed
+if ($d->{'home'} ne $oldd->{'home'}) {
+        foreach my $k ('ssl_cert', 'ssl_key', 'ssl_chain') {
+                $d->{$k} =~ s/\Q$oldd->{'home'}\E\//$d->{'home'}\//;
+                }
+	}
+
+# If domain name has changed, re-generate self-signed cert
+if ($d->{'dom'} ne $oldd->{'dom'} &&
+    &virtual_server::self_signed_cert($d) &&
+    !&virtual_server::check_domain_certificate($d->{'dom'}, $d)) {
+        &$virtual_server::first_print($virtual_server::text{'save_ssl11'});
+        my $info = &virtual_server::cert_info($d);
+        &lock_file($d->{'ssl_cert'});
+        &lock_file($d->{'ssl_key'});
+        my $err = &virtual_server::generate_self_signed_cert(
+                $d->{'ssl_cert'}, $d->{'ssl_key'},
+                undef,
+                1825,
+                $info->{'c'},
+                $info->{'st'},
+                $info->{'l'},
+                $info->{'o'},
+                $info->{'ou'},
+                "*.$d->{'dom'}",
+                $d->{'emailto'},
+                $info->{'alt'},
+                $d,
+                );
+        &unlock_file($d->{'ssl_key'});
+        &unlock_file($d->{'ssl_cert'});
+        if ($err) {
+                &$virtual_server::second_print(
+			&virtual_server::text('setup_eopenssl', $err));
+                }
+        else {
+                &$virtual_server::second_print(
+			$virtual_server::text{'setup_done'});
+                }
+	$changed++;
+        }
+
+# If IP address has changed, fix per-IP SSL certs
+if ($d->{'ip'} ne $oldd->{'ip'} ||
+    $d->{'home'} ne $oldd->{'home'}) {
+	&virtual_server::modify_ipkeys($d, $oldd, \&get_miniserv_config,
+                       \&put_miniserv_config,
+                       \&virtual_server::restart_webmin);
+        if (&foreign_installed("usermin")) {
+                &foreign_require("usermin", "usermin-lib.pl");
+                &virtual_server::modify_ipkeys($d, $oldd,
+                               \&usermin::get_usermin_miniserv_config,
+                               \&usermin::put_usermin_miniserv_config,
+                               \&virtual_server::restart_usermin);
+                }
+        }
+
+# Flush files and restart
+&virtualmin_nginx::flush_config_file_lines();
+&virtualmin_nginx::unlock_all_config_files();
+if ($changed) {
+	&virtual_server::register_post_action(
+		\&virtualmin_nginx::print_apply_nginx);
+	}
+}
+
+# feature_delete(&domain)
+# Turn off SSL for the domain
+sub feature_delete
+{
+my ($d) = @_;
+&$virtual_server::first_print($text{'feat_delete'});
+&virtualmin_nginx::lock_all_config_files();
+my $server = &virtualmin_nginx::find_domain_server($d);
+if (!$server) {
+	&virtualmin_nginx::unlock_all_config_files();
+        &$virtual_server::second_print(
+                &virtualmin_nginx::text('feat_efind', $d->{'dom'}));
+        return 0;
+	}
+
+# Turn off ssl
+&virtualmin_nginx::save_directive($server, "ssl", [ ]);
+&virtualmin_nginx::save_directive($server, "ssl_certificate", [ ]);
+&virtualmin_nginx::save_directive($server, "ssl_certificate_key", [ ]);
+
+# Remove SSL port listens
+my @listen = &virtualmin_nginx::find("listen", $server);
+my @newlisten;
+foreach my $l (@listen) {
+	if (&indexof("ssl", @{$l->{'words'}}) < 0) {
+		push(@newlisten, $l);
+		}
+	}
+&virtualmin_nginx::save_directive($server, "listen", \@newlisten);
+
+&virtualmin_nginx::flush_config_file_lines();
+&virtualmin_nginx::unlock_all_config_files();
+&virtual_server::register_post_action(\&virtualmin_nginx::print_apply_nginx);
+
+&$virtual_server::second_print($virtual_server::text{'setup_done'});
+}
+
+# feature_validate(&domain)
+# Checks that SSL related settings are correct
+sub feature_validate
+{
+my ($d) = @_;
+
+# Does server exist?
+my $server = &virtualmin_nginx::find_domain_server($d);
+return &virtualmin_nginx::text('feat_evalidate',
+	"<tt>".&virtual_server::show_domain_name($d)."</tt>") if (!$server);
+
+# Check for IPs and port
+my @listen = &virtualmin_nginx::find_value("listen", $server);
+my $found = 0;
+foreach my $l (@listen) {
+	$found++ if ($l eq $d->{'ip'} && 
+		      $d->{'web_sslport'} == 80 ||
+		     $l =~ /^\Q$d->{'ip'}\E:(\d+)$/ &&
+		      $d->{'web_sslport'} == $1);
+	}
+$found || return &virtualmin_nginx::text('feat_evalidateip',
+					 $d->{'ip'}, $d->{'web_sslport'});
+if ($d->{'virt6'}) {
+	my $found6 = 0;
+	foreach my $l (@listen) {
+		$found6++ if ($l eq "[".$d->{'ip6'}."]" && 
+			       $d->{'web_sslport'} == 80 ||
+			      $l =~ /^\[\Q$d->{'ip6'}\E\]:(\d+)$/ &&
+			       $d->{'web_sslport'} == $1);
+		}
+	$found6 || return &virtualmin_nginx::text('feat_evalidateip6',
+					  $d->{'ip6'}, $d->{'web_sslport'});
+	}
+
+# Make sure cert file exists
+my $cert = &virtualmin_nginx::find_value("ssl_certificate", $server);
+if (!$cert) {
+        return &text('feat_esslcert');
+        }
+elsif (!-r $cert) {
+        return &text('feat_esslcertfile', "<tt>$cert</tt>");
+        }
+
+# Make sure key exists
+my $key = &virtualmin_nginx::find_value("ssl_certificate_key", $server);
+if (!$key) {
+        return &text('feat_esslkey');
+        }
+elsif (!-r $key) {
+        return &text('feat_esslkeyfile', "<tt>$key</tt>");
+        }
+
+# Make sure this domain or www.domain matches cert
+if (!&virtual_server::check_domain_certificate($d->{'dom'}, $d) &&
+    !&virtual_server::check_domain_certificate("www.".$d->{'dom'}, $d)) {
+        return &virtual_server::text('validate_essldom',
+                     "<tt>".$d->{'dom'}."</tt>",
+                     "<tt>"."www.".$d->{'dom'}."</tt>",
+                     join(", ", map { "<tt>$_</tt>" }
+			    &virtual_server::list_domain_certificate($d)));
+        }
+
+return undef;
 }
 
 1;
