@@ -48,7 +48,9 @@ return "label";
 # Check for Nginx plugin?
 sub feature_check
 {
-# XXX
+if (&indexof("virtualmin-nginx", @virtual_server::plugins) < 0) {
+	return $text{'feat_eplugindep'};
+	}
 return undef;
 }
 
@@ -233,7 +235,11 @@ if (!$old_ip6 && $d->{'virt6'}) {
 				  [ $d->{'ssl_cert'} ]);
 &virtualmin_nginx::save_directive($server, "ssl_certificate_key",
 				  [ $d->{'ssl_key'} ]);
-# XXX chained cert .. in same file as cert?
+if ($d->{'ssl_chain'}) {
+	# Add chained cert to main cert file
+	&virtualmin_nginx::feature_save_web_ssl_file(
+		$d, 'ca', $d->{'ssl_chain'});
+	}
 
 &virtualmin_nginx::flush_config_file_lines();
 &virtualmin_nginx::unlock_all_config_files();
@@ -251,9 +257,6 @@ if ($tmpl->{'web_usermin_ssl'} && &foreign_installed("usermin") &&
                       \&usermin::put_usermin_miniserv_config,
                       \&virtual_server::restart_usermin);
         }
-
-# chained CA cert in from domain with same IP, if any
-# XXX
 
 &$virtual_server::second_print($virtual_server::text{'setup_done'});
 }
@@ -309,9 +312,7 @@ if ($d->{'ip'} ne $oldd->{'ip'} && $oldd->{'ssl_same'}) {
                 $d->{'ssl_cert'} = $sslclash->{'ssl_cert'};
                 $d->{'ssl_key'} = $sslclash->{'ssl_key'};
                 $d->{'ssl_same'} = $sslclash->{'id'};
-		# XXX chained func?
-                my $chained = &virtual_server::get_chained_certificate_file($sslclash);
-                $d->{'ssl_chain'} = $chained;
+                $d->{'ssl_chain'} = $sslclash->{'ssl_chain'};
                 }
         else {
                 # No domain has the same cert anymore - copy the one from the

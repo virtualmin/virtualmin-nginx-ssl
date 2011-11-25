@@ -11,3 +11,4 @@ feat_esslkey=No SSL private key file specified in Nginx virtual host
 feat_esslkeyfile=SSL private key file $1 does not exist
 feat_modifyport=Changing SSL port in Nginx configuration ..
 feat_sslclash=SSL cannot be enabled on IP address $1 and port $2, as it is already active for Nginx virtual host $3
+feat_eplugindep=The Nginx SSL website plugin cannot be enabled unless the regular Nginx plugin is too
