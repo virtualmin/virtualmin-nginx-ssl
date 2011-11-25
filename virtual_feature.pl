@@ -84,6 +84,32 @@ foreach my $l (&virtualmin_nginx::find("listen", $server)) {
 return 0;
 }
 
+# feature_clash(&domain, [field])
+# Check if any other domain or virtualhost has SSL on the same IP
+# XXX actually may be legit?
+sub feature_clash
+{
+my ($d, $field) = @_;
+if (!$field || $field eq 'ip') {
+	my $conf = &virtualmin_nginx::get_config();
+	my $http = &virtualmin_nginx::find("http", $conf);
+	my $tmpl = &virtual_server::get_template($d->{'template'});
+	my $port = $d->{'web_sslport'} || $tmpl->{'web_sslport'} || 443;
+	foreach my $s (&virtualmin_nginx::find("server", $http)) {
+		foreach my $l (&virtualmin_nginx::find_value("listen", $s)) {
+			my ($lip, $lport) =&virtualmin_nginx::split_ip_port($l);
+			if ($lip eq $d->{'ip'} && $lport == $port) {
+				my $name = virtualmin_nginx::find_value(
+						"server_name", $s);
+				return &text('feat_sslclash', $d->{'ip'},
+					     $port, $name);
+				}
+			}
+		}
+	}
+return undef;
+}
+
 # feature_warnings(&domain, [&old-domain])
 # Check for a certificate clash, and return a warning
 sub feature_warnings
@@ -132,6 +158,7 @@ sub feature_setup
 my ($d) = @_;
 my $tmpl = &virtual_server::get_template($d->{'template'});
 $d->{'web_sslport'} = $d->{'web_sslport'} || $tmpl->{'web_sslport'} || 443;
+$d->{'web_ssl_samechain'} = 1;
 
 # Find out if this domain will share a cert with another
 &virtual_server::find_chained_certificate($d);
@@ -401,6 +428,7 @@ foreach my $l (@listen) {
 &virtualmin_nginx::unlock_all_config_files();
 &virtual_server::register_post_action(\&virtualmin_nginx::print_apply_nginx);
 
+$d->{'web_ssl_samechain'} = 0;
 &$virtual_server::second_print($virtual_server::text{'setup_done'});
 }
 
