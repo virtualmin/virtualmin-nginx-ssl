@@ -498,5 +498,13 @@ if (!&virtual_server::check_domain_certificate($d->{'dom'}, $d) &&
 return undef;
 }
 
+# feature_clone(&domain, &old-domain)
+# This function does nothing, but needs to exist so that the ssl feature is 
+# preserved when cloning
+sub feature_clone
+{
+return 1;
+}
+
 1;
 
