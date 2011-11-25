@@ -10,6 +10,11 @@ our (%text, %config, $module_name, %access);
 	  &load_language("virtualmin-nginx"),
 	  %text );
 
+sub feature_provides_ssl
+{
+return 1;	# Enables SSL
+}
+
 # feature_name()
 # Returns a short name for this feature
 sub feature_name
@@ -133,10 +138,10 @@ else {
 	# Neither .. but we can still do SSL, if there are no other domains
 	# with SSL on the same IP
         my ($sslclash) = grep { $_->{'ip'} eq $d->{'ip'} &&
-                                $_->{'ssl'} &&
+                                &virtual_server::domain_has_ssl($_) &&
                                 $_->{'id'} ne $d->{'id'} }
 			      &virtual_server::list_domains();
-        if ($sslclash && (!$oldd || !$oldd->{'ssl'})) {
+        if ($sslclash && (!$oldd || !&virtual_server::domain_has_ssl($oldd))) {
 		# Clash .. but is the cert OK?
 		if (!&check_domain_certificate($d->{'dom'}, $sslclash)) {
                         my @certdoms = &virtual_server::list_domain_certificate($sslclash);
@@ -230,7 +235,6 @@ if (!$old_ip6 && $d->{'virt6'}) {
 &virtualmin_nginx::save_directive($server, "listen", \@listen);
 
 # Enable SSL
-&virtualmin_nginx::save_directive($server, "ssl", [ "on" ]);
 &virtualmin_nginx::save_directive($server, "ssl_certificate",
 				  [ $d->{'ssl_cert'} ]);
 &virtualmin_nginx::save_directive($server, "ssl_certificate_key",
@@ -298,10 +302,10 @@ if ($d->{'web_sslport'} != $oldd->{'web_sslport'}) {
 # If IP has changed, maybe clear ssl_same field for cert sharing
 if ($d->{'ip'} ne $oldd->{'ip'} && $oldd->{'ssl_same'}) {
         my ($sslclash) = grep { $_->{'ip'} eq $d->{'ip'} &&
-                                   $_->{'ssl'} &&
-                                   $_->{'id'} ne $d->{'id'} &&
-                                   !$_->{'ssl_same'} }
-				 &virtual_server::list_domains();
+                                &virtual_server::domain_has_ssl($_) &&
+                                $_->{'id'} ne $d->{'id'} &&
+                                !$_->{'ssl_same'} }
+			      &virtual_server::list_domains();
         my $oldsslclash = &virtual_server::get_domain($oldd->{'ssl_same'});
         if ($sslclash && $oldd->{'ssl_same'} eq $sslclash->{'id'}) {
 		# No need to change
