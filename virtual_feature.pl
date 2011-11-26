@@ -230,7 +230,7 @@ if (!$old_ip4) {
 if (!$old_ip6 && $d->{'virt6'}) {
 	push(@listen, { 'name' => 'listen',
 		        'words' => [ "[".$d->{'ip6'}."]:".$d->{'web_sslport'},
-				     'default', 'ssl' ]});
+				     'default', 'ssl', 'ipv6only=on' ]});
 	}
 &virtualmin_nginx::save_directive($server, "listen", \@listen);
 
