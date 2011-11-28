@@ -93,7 +93,6 @@ return 0;
 
 # feature_clash(&domain, [field])
 # Check if any other domain or virtualhost has SSL on the same IP
-# XXX actually may be legit?
 sub feature_clash
 {
 my ($d, $field) = @_;
@@ -105,7 +104,7 @@ if (!$field || $field eq 'ip') {
 	foreach my $s (&virtualmin_nginx::find("server", $http)) {
 		foreach my $l (&virtualmin_nginx::find_value("listen", $s)) {
 			my ($lip, $lport) =&virtualmin_nginx::split_ip_port($l);
-			if ($lip eq $d->{'ip'} && $lport == $port) {
+			if ($lip && $lip eq $d->{'ip'} && $lport == $port) {
 				my $name = virtualmin_nginx::find_value(
 						"server_name", $s);
 				return &text('feat_sslclash', $d->{'ip'},
@@ -143,8 +142,10 @@ else {
 			      &virtual_server::list_domains();
         if ($sslclash && (!$oldd || !&virtual_server::domain_has_ssl($oldd))) {
 		# Clash .. but is the cert OK?
-		if (!&check_domain_certificate($d->{'dom'}, $sslclash)) {
-                        my @certdoms = &virtual_server::list_domain_certificate($sslclash);
+		if (!&virtual_server::check_domain_certificate($d->{'dom'},
+							       $sslclash)) {
+                        my @certdoms = &virtual_server::list_domain_certificate(
+					$sslclash);
                         return &virtual_server::text(
 				'setup_edepssl5', $d->{'ip'},
                                 join(", ", map { "<tt>$_</tt>" } @certdoms),
@@ -216,7 +217,6 @@ if ($err) {
         }
 
 # Add listen line
-# XXX multiple on same IP?
 my @listen = &virtualmin_nginx::find("listen", $server);
 my ($old_ip4) = grep { $_->{'words'}->[0] eq
 		       $d->{'ip'}.":".$d->{'web_sslport'} } @listen;
