@@ -133,6 +133,11 @@ elsif ($port != $defport) {
         # Has a private port
         return undef;
 	}
+elsif ($virtual_server::config{'sni_support'}) {
+	# Assume web server and clients can handle multiple SSL certs on
+	# the same IP address
+	return undef;
+	}
 else {
 	# Neither .. but we can still do SSL, if there are no other domains
 	# with SSL on the same IP
