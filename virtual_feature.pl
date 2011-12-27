@@ -91,31 +91,6 @@ foreach my $l (&virtualmin_nginx::find("listen", $server)) {
 return 0;
 }
 
-# feature_clash(&domain, [field])
-# Check if any other domain or virtualhost has SSL on the same IP
-sub feature_clash
-{
-my ($d, $field) = @_;
-if (!$field || $field eq 'ip') {
-	my $conf = &virtualmin_nginx::get_config();
-	my $http = &virtualmin_nginx::find("http", $conf);
-	my $tmpl = &virtual_server::get_template($d->{'template'});
-	my $port = $d->{'web_sslport'} || $tmpl->{'web_sslport'} || 443;
-	foreach my $s (&virtualmin_nginx::find("server", $http)) {
-		foreach my $l (&virtualmin_nginx::find_value("listen", $s)) {
-			my ($lip, $lport) =&virtualmin_nginx::split_ip_port($l);
-			if ($lip && $lip eq $d->{'ip'} && $lport == $port) {
-				my $name = virtualmin_nginx::find_value(
-						"server_name", $s);
-				return &text('feat_sslclash', $d->{'ip'},
-					     $port, $name);
-				}
-			}
-		}
-	}
-return undef;
-}
-
 # feature_warnings(&domain, [&old-domain])
 # Check for a certificate clash, and return a warning
 sub feature_warnings
@@ -227,15 +202,19 @@ my ($old_ip4) = grep { $_->{'words'}->[0] eq
 		       $d->{'ip'}.":".$d->{'web_sslport'} } @listen;
 my ($old_ip6) = grep { $_->{'words'}->[0] eq
 		       "[".$d->{'ip'}."]:".$d->{'web_sslport'} } @listen;
+my @sslopts;
+if (!&find_listen_clash($d->{'ip'}, $d->{'web_sslport'})) {
+	push(@sslopts, 'default', 'ssl');
+	}
 if (!$old_ip4) {
 	push(@listen, { 'name' => 'listen',
 		        'words' => [ $d->{'ip'}.":".$d->{'web_sslport'},
-				     'default', 'ssl' ]});
+				     @sslopts ] });
 	}
 if (!$old_ip6 && $d->{'virt6'}) {
 	push(@listen, { 'name' => 'listen',
 		        'words' => [ "[".$d->{'ip6'}."]:".$d->{'web_sslport'},
-				     'default', 'ssl', 'ipv6only=on' ]});
+				     @sslopts, 'ipv6only=on' ]});
 	}
 &virtualmin_nginx::save_directive($server, "listen", \@listen);
 
@@ -428,7 +407,13 @@ if (!$server) {
 my @listen = &virtualmin_nginx::find("listen", $server);
 my @newlisten;
 foreach my $l (@listen) {
-	if (&indexof("ssl", @{$l->{'words'}}) < 0) {
+	my ($lip, $lport) = &virtualmin_nginx::split_ip_port(
+		$l->{'words'}->[0]);
+	if (&indexof("ssl", @{$l->{'words'}}) >= 0 ||
+	    $lip eq $d->{'ip'} && $lport == $d->{'web_sslport'}) {
+		# Don't add to new list of listen directives
+		}
+	else {
 		push(@newlisten, $l);
 		}
 	}
