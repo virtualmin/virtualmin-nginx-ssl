@@ -4,3 +4,4 @@ version=1.2
 readonly=1
 depends=virtualmin-nginx virtual-server
 hidden=1
+desc_nl=Nginx SSL Webserver

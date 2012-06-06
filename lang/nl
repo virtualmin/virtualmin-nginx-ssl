@@ -1,0 +1,14 @@
+feat_delete=SSL verwijderen van de Nginx virtuele host ..
+feat_disname=Nginx SSL website
+feat_eplugindep=De Nginx SSL website plugin kan niet worden aangezet totdat de reguliere Nginx plugin is aangezet.
+feat_esslcert=Er is geen SSL certificaat gespecificeerd in de Nginx virtuele host
+feat_esslcertfile=SSL certificaat file $1 bestaat niet
+feat_esslkey=Er is geen SSL prive sleutel file gespecificeerd in de Nginx virtuele host
+feat_esslkeyfile=SSL prive sleutel file $1 bestaat niet
+feat_label=Nginx SSL website aanzetten?
+feat_losing=De Nginx virtuele host zal niet langer SSL verbindingen accepteren
+feat_modifyport=SSL poort wijzigen in de Nginx configuratie ..
+feat_name=Nginx SSL website
+feat_nginx=Een SSL website kan niet worden aangezet totdat er een reguliere website aanstaat.
+feat_setup=SSL toevoegen aan de Nginx virtuele host ..
+feat_sslclash=SSL kan niet worden aangezet op IP adres $1 en poort $2 omdat dit reeds actief is voor de Nginx virtuele host $3
