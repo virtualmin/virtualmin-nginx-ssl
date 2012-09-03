@@ -2,6 +2,7 @@ feat_name=Nginx SSL website
 feat_losing=The Nginx virtual host will no longer accept SSL connections
 feat_disname=Nginx SSL website
 feat_label=Enable Nginx SSL website?
+feat_label2=Nginx SSL website
 feat_nginx=An SSL website cannot be enabled unless a regular website is
 feat_setup=Adding SSL to Nginx virtual host ..
 feat_delete=Removing SSL from Nginx virtual host ..
