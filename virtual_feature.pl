@@ -150,7 +150,7 @@ $d->{'web_sslport'} = $d->{'web_sslport'} || $tmpl->{'web_sslport'} || 443;
 $d->{'web_ssl_samechain'} = 1;
 
 # Find out if this domain will share a cert with another
-&virtual_server::find_chained_certificate($d);
+&virtual_server::find_matching_certificate($d);
 
 # Create a self-signed cert and key, if needed
 &virtual_server::generate_default_certificate($d);
