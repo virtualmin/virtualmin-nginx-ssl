@@ -50,11 +50,13 @@ sub feature_hlink
 return "label";
 }
 
-# feature_check()
+# feature_check([&new-features])
 # Check for Nginx plugin?
 sub feature_check
 {
-if (&indexof("virtualmin-nginx", @virtual_server::plugins) < 0) {
+my ($features) = @_;
+$features ||= [ @virtual_server::plugins ];
+if (&indexof("virtualmin-nginx", @$features) < 0) {
 	return $text{'feat_eplugindep'};
 	}
 return undef;
