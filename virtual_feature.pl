@@ -103,6 +103,9 @@ my $tmpl = &virtual_server::get_template($d->{'template'});
 my $defport = $tmpl->{'web_sslport'} || 443;
 my $port = $d->{'web_sslport'} || $defport;
 
+# Check if Nginx supports SNI, which makes clashing certs not so bad
+local $sni = &virtualmin_nginx::feature_supports_sni();
+
 if ($d->{'virt'}) {
         # Has a private IP
         return undef;
@@ -130,7 +133,8 @@ else {
                         my @certdoms = &virtual_server::list_domain_certificate(
 					$sslclash);
                         return &virtual_server::text(
-				'setup_edepssl5', $d->{'ip'},
+				$sni ? 'setup_edepssl5sni'
+				     : 'setup_edepssl5', $d->{'ip'},
                                 join(", ", map { "<tt>$_</tt>" } @certdoms),
                                 $sslclash->{'dom'});
                         }
