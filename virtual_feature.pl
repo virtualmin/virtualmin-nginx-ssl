@@ -104,7 +104,7 @@ my $defport = $tmpl->{'web_sslport'} || 443;
 my $port = $d->{'web_sslport'} || $defport;
 
 # Check if Nginx supports SNI, which makes clashing certs not so bad
-local $sni = &virtualmin_nginx::feature_supports_sni();
+my $sni = &virtualmin_nginx::feature_supports_sni();
 
 if ($d->{'virt'}) {
         # Has a private IP
