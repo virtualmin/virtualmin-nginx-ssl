@@ -213,6 +213,9 @@ my @sslopts;
 if (!&find_listen_clash($d->{'ip'}, $d->{'web_sslport'})) {
 	push(@sslopts, 'default', 'ssl');
 	}
+else {
+	push(@sslopts, 'ssl');
+	}
 if (!$old_ip4) {
 	push(@listen, { 'name' => 'listen',
 		        'words' => [ $d->{'ip'}.":".$d->{'web_sslport'},
