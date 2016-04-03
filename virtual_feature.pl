@@ -420,7 +420,8 @@ foreach my $l (@listen) {
 	my ($lip, $lport) = &virtualmin_nginx::split_ip_port(
 		$l->{'words'}->[0]);
 	if (&indexof("ssl", @{$l->{'words'}}) >= 0 ||
-	    $lip eq $d->{'ip'} && $lport == $d->{'web_sslport'}) {
+	    $lip && $port &&
+	      $lip eq $d->{'ip'} && $lport == $d->{'web_sslport'}) {
 		# Don't add to new list of listen directives
 		}
 	else {
