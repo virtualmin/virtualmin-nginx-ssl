@@ -55,7 +55,9 @@ return "label";
 sub feature_check
 {
 my ($features) = @_;
+no warnings "once";
 $features ||= [ @virtual_server::plugins ];
+use warnings "once";
 if (&indexof("virtualmin-nginx", @$features) < 0) {
 	return $text{'feat_eplugindep'};
 	}
@@ -106,6 +108,7 @@ my $port = $d->{'web_sslport'} || $defport;
 # Check if Nginx supports SNI, which makes clashing certs not so bad
 my $sni = &virtualmin_nginx::feature_supports_sni();
 
+no warnings "once";
 if ($d->{'virt'}) {
         # Has a private IP
         return undef;
@@ -145,6 +148,7 @@ else {
 	return undef;
 	}
 }
+use warnings "once";
 
 # feature_setup(&domain)
 # Adds SSL to an Nginx website
@@ -453,7 +457,7 @@ return &virtualmin_nginx::text('feat_evalidate',
 my @listen = &virtualmin_nginx::find_value("listen", $server);
 my $found = 0;
 foreach my $l (@listen) {
-	$found++ if ($l eq $d->{'ip'} && 
+	$found++ if ($l eq $d->{'ip'} &&
 		      $d->{'web_sslport'} == 80 ||
 		     $l =~ /^\Q$d->{'ip'}\E:(\d+)$/ &&
 		      $d->{'web_sslport'} == $1);
@@ -463,7 +467,7 @@ $found || return &virtualmin_nginx::text('feat_evalidateip',
 if ($d->{'virt6'}) {
 	my $found6 = 0;
 	foreach my $l (@listen) {
-		$found6++ if ($l eq "[".$d->{'ip6'}."]" && 
+		$found6++ if ($l eq "[".$d->{'ip6'}."]" &&
 			       $d->{'web_sslport'} == 80 ||
 			      $l =~ /^\[\Q$d->{'ip6'}\E\]:(\d+)$/ &&
 			       $d->{'web_sslport'} == $1);
@@ -504,7 +508,7 @@ return undef;
 }
 
 # feature_clone(&domain, &old-domain)
-# This function does nothing, but needs to exist so that the ssl feature is 
+# This function does nothing, but needs to exist so that the ssl feature is
 # preserved when cloning
 sub feature_clone
 {
@@ -512,4 +516,3 @@ return 1;
 }
 
 1;
-
