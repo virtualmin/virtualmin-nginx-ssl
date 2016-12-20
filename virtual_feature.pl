@@ -212,7 +212,7 @@ my @listen = &virtualmin_nginx::find("listen", $server);
 my ($old_ip4) = grep { $_->{'words'}->[0] eq
 		       $d->{'ip'}.":".$d->{'web_sslport'} } @listen;
 my ($old_ip6) = grep { $_->{'words'}->[0] eq
-		       "[".$d->{'ip'}."]:".$d->{'web_sslport'} } @listen;
+		       "[".$d->{'ip6'}."]:".$d->{'web_sslport'} } @listen;
 my @sslopts;
 if (!&find_listen_clash($d->{'ip'}, $d->{'web_sslport'})) {
 	push(@sslopts, 'default', 'ssl');
