@@ -225,10 +225,10 @@ if (!$old_ip4) {
 		        'words' => [ $d->{'ip'}.":".$d->{'web_sslport'},
 				     @sslopts ] });
 	}
-if (!$old_ip6 && $d->{'virt6'}) {
+if (!$old_ip6 && $d->{'ip6'}) {
 	push(@listen, { 'name' => 'listen',
 		        'words' => [ "[".$d->{'ip6'}."]:".$d->{'web_sslport'},
-				     @sslopts, 'ipv6only=on' ]});
+				     @sslopts ]});
 	}
 &virtualmin_nginx::save_directive($server, "listen", \@listen);
 
