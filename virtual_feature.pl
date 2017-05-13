@@ -249,15 +249,18 @@ if ($d->{'ssl_chain'}) {
 
 # Add this IP and cert to Webmin/Usermin's SSL keys list
 if ($tmpl->{'web_webmin_ssl'} && $d->{'virt'}) {
-        &setup_ipkeys($d, \&get_miniserv_config, \&put_miniserv_config,
-                      \&virtual_server::restart_webmin);
+        &virtual_server::setup_ipkeys($d,
+		\&get_miniserv_config,
+		\&put_miniserv_config,
+		\&virtual_server::restart_webmin);
         }
 if ($tmpl->{'web_usermin_ssl'} && &foreign_installed("usermin") &&
     $d->{'virt'}) {
         &foreign_require("usermin", "usermin-lib.pl");
-        &setup_ipkeys($d, \&usermin::get_usermin_miniserv_config,
-                      \&usermin::put_usermin_miniserv_config,
-                      \&virtual_server::restart_usermin);
+        &virtual_server::setup_ipkeys($d,
+		\&usermin::get_usermin_miniserv_config,
+		\&usermin::put_usermin_miniserv_config,
+		\&virtual_server::restart_usermin);
         }
 
 &$virtual_server::second_print($virtual_server::text{'setup_done'});
