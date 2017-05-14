@@ -248,14 +248,16 @@ if ($d->{'ssl_chain'}) {
 &virtual_server::register_post_action(\&virtualmin_nginx::print_apply_nginx);
 
 # Add this IP and cert to Webmin/Usermin's SSL keys list
-if ($tmpl->{'web_webmin_ssl'} && $d->{'virt'}) {
+my %vinfo = &get_module_info("virtual-server");
+my $canipkeys = $d->{'virt'} || $vinfo{'version'} >= 5.08;
+if ($tmpl->{'web_webmin_ssl'} && $canipkeys) {
         &virtual_server::setup_ipkeys($d,
 		\&get_miniserv_config,
 		\&put_miniserv_config,
 		\&virtual_server::restart_webmin);
         }
 if ($tmpl->{'web_usermin_ssl'} && &foreign_installed("usermin") &&
-    $d->{'virt'}) {
+    $canipkeys) {
         &foreign_require("usermin", "usermin-lib.pl");
         &virtual_server::setup_ipkeys($d,
 		\&usermin::get_usermin_miniserv_config,
