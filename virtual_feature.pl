@@ -211,8 +211,11 @@ if ($err) {
 my @listen = &virtualmin_nginx::find("listen", $server);
 my ($old_ip4) = grep { $_->{'words'}->[0] eq
 		       $d->{'ip'}.":".$d->{'web_sslport'} } @listen;
-my ($old_ip6) = grep { $_->{'words'}->[0] eq
+my $old_ip6;
+if ($d->{'ip6'}) {
+	($old_ip6) = grep { $_->{'words'}->[0] eq
 		       "[".$d->{'ip6'}."]:".$d->{'web_sslport'} } @listen;
+	}
 my @sslopts;
 if (!&find_listen_clash($d->{'ip'}, $d->{'web_sslport'})) {
 	push(@sslopts, 'default', 'ssl');
@@ -249,9 +252,10 @@ if ($d->{'ssl_chain'}) {
 
 # Add this IP and cert to Webmin/Usermin's SSL keys list
 my %vinfo = &get_module_info("virtual-server");
-my $canipkeys = $d->{'virt'} || $vinfo{'version'} >= 5.08;
-my $rwfunc = $vinfo{'version'} >= 5.08 ? \&virtual_server::restart_webmin_fully
-				       : \&virtual_server::restart_webmin;
+my $nv = &compare_version_numbers($vinfo{'version'}, 5.08) >= 0;
+my $canipkeys = $d->{'virt'} || $nv;
+my $rwfunc = $nv ? \&virtual_server::restart_webmin_fully
+	         : \&virtual_server::restart_webmin;
 if ($tmpl->{'web_webmin_ssl'} && $canipkeys) {
         &virtual_server::setup_ipkeys($d,
 		\&get_miniserv_config,
@@ -447,8 +451,9 @@ foreach my $l (@listen) {
 
 # Delete per-IP SSL cert
 my %vinfo = &get_module_info("virtual-server");
-my $rwfunc = $vinfo{'version'} >= 5.08 ? \&virtual_server::restart_webmin_fully
-				       : \&virtual_server::restart_webmin;
+my $nv = &compare_version_numbers($vinfo{'version'}, 5.08) >= 0;
+my $rwfunc = $nv ? \&virtual_server::restart_webmin_fully
+	         : \&virtual_server::restart_webmin;
 &virtual_server::delete_ipkeys($d,
 	\&get_miniserv_config,
 	\&put_miniserv_config,
