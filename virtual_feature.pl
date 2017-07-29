@@ -251,19 +251,13 @@ if ($d->{'ssl_chain'}) {
 &virtual_server::register_post_action(\&virtualmin_nginx::print_apply_nginx);
 
 # Add this IP and cert to Webmin/Usermin's SSL keys list
-my %vinfo = &get_module_info("virtual-server");
-my $nv = &compare_version_numbers($vinfo{'version'}, 5.08) >= 0;
-my $canipkeys = $d->{'virt'} || $nv;
-my $rwfunc = $nv ? \&virtual_server::restart_webmin_fully
-	         : \&virtual_server::restart_webmin;
-if ($tmpl->{'web_webmin_ssl'} && $canipkeys) {
+if ($tmpl->{'web_webmin_ssl'}) {
         &virtual_server::setup_ipkeys($d,
 		\&get_miniserv_config,
 		\&put_miniserv_config,
-		$rwfunc);
+		\&virtual_server::restart_webmin_fully);
         }
-if ($tmpl->{'web_usermin_ssl'} && &foreign_installed("usermin") &&
-    $canipkeys) {
+if ($tmpl->{'web_usermin_ssl'} && &foreign_installed("usermin")) {
         &foreign_require("usermin");
         &virtual_server::setup_ipkeys($d,
 		\&usermin::get_usermin_miniserv_config,
@@ -450,14 +444,10 @@ foreach my $l (@listen) {
 &virtual_server::register_post_action(\&virtualmin_nginx::print_apply_nginx);
 
 # Delete per-IP SSL cert
-my %vinfo = &get_module_info("virtual-server");
-my $nv = &compare_version_numbers($vinfo{'version'}, 5.08) >= 0;
-my $rwfunc = $nv ? \&virtual_server::restart_webmin_fully
-	         : \&virtual_server::restart_webmin;
 &virtual_server::delete_ipkeys($d,
 	\&get_miniserv_config,
 	\&put_miniserv_config,
-	$rwfunc);
+	\&virtual_server::restart_webmin_fully);
 if (&foreign_installed("usermin")) {
         &foreign_require("usermin");
         &virtual_server::delete_ipkeys($d,
