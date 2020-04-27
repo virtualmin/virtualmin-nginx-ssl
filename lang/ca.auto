@@ -1,0 +1,15 @@
+feat_name=Lloc web de Nginx SSL
+feat_losing=L’amfitrió virtual de Nginx ja no acceptarà connexions SSL
+feat_disname=Lloc web de Nginx SSL
+feat_label=Habiliteu el lloc web SSL de Nginx?
+feat_label2=Lloc web de Nginx SSL activat?
+feat_nginx=No es pot habilitar un lloc web SSL tret que hi hagi un lloc web habitual
+feat_setup=Afegir SSL a l'amfitrió virtual de Nginx ..
+feat_delete=Eliminació de SSL de l'amfitrió virtual de Nginx.
+feat_esslcert=No s'ha especificat cap fitxer de certificat SSL a l'amfitrió virtual de Nginx
+feat_esslcertfile=El fitxer de certificat SSL $1 no existeix
+feat_esslkey=No s'ha especificat cap fitxer de clau privada SSL a l'amfitrió virtual de Nginx
+feat_esslkeyfile=El fitxer de clau privada SSL $1 no existeix
+feat_modifyport=Canvi del port SSL en la configuració de Nginx ..
+feat_sslclash=No es pot activar el SSL a l'adreça IP $1 i al port $2, ja que ja està actiu per a l'amfitrió virtual Nginx $3 
+feat_eplugindep=El complement de lloc web de Nginx SSL no es pot activar a menys que el complement Nginx sigui regular

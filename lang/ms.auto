@@ -1,0 +1,15 @@
+feat_name=Laman web Nginx SSL
+feat_losing=Host maya Nginx tidak lagi menerima sambungan SSL
+feat_disname=Laman web Nginx SSL
+feat_label=Dayakan laman web Nginx SSL?
+feat_label2=Laman web Nginx SSL didayakan?
+feat_nginx=Laman web SSL tidak dapat diaktifkan melainkan laman web biasa
+feat_setup=Menambah SSL ke hos maya Nginx ..
+feat_delete=Mengalih keluar SSL dari hos maya Nginx ..
+feat_esslcert=Tiada fail sijil SSL yang ditentukan dalam hos maya Nginx
+feat_esslcertfile=Fail sijil SSL $1 tidak wujud
+feat_esslkey=Tiada fail kunci peribadi SSL ditentukan dalam hos maya Nginx
+feat_esslkeyfile=Fail kunci persendirian SSL $1 tidak wujud
+feat_modifyport=Menukar port SSL dalam konfigurasi Nginx ..
+feat_sslclash=SSL tidak dapat diaktifkan pada alamat IP $1 dan port $2, kerana ia sudah aktif untuk host maya Nginx $3 
+feat_eplugindep=Plugin Nginx SSL tidak boleh diaktifkan melainkan plugin Nginx biasa juga

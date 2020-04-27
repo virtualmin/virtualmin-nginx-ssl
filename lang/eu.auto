@@ -1,0 +1,15 @@
+feat_name=Nginx SSL webgunea
+feat_losing=Nginx ostalari birtualak ez du SSL konexiorik onartuko
+feat_disname=Nginx SSL webgunea
+feat_label=Gaitu Nginx SSL webgunea?
+feat_label2=Nginx SSL webgunea gaituta dago?
+feat_nginx=SSL webgune bat ezin da gaitu webgune arrunt bat izan ezean
+feat_setup=SSL gehitzen Nginx ostalari birtualari ..
+feat_delete=SSL kentzea Nginx ostalari birtualetik ..
+feat_esslcert=Ez da SSL ziurtagiri fitxategirik zehaztu Nginx ostalari birtualan
+feat_esslcertfile=$1 SSL ziurtagiri fitxategia ez da existitzen
+feat_esslkey=Ez da SSL gako pribatuko fitxategirik zehaztu Nginx ostalari birtualan
+feat_esslkeyfile=Ez da $1 SSL gako pribatuko fitxategia
+feat_modifyport=SSL ataka aldatzea Nginx konfigurazioan ..
+feat_sslclash=Ezin da SSL gaitu $1 IP helbidean eta $2 atarian, dagoeneko aktibo dagoelako Nginx $3 ostalari birtualerako
+feat_eplugindep=Nginx SSL webgunearen plugin-a ezin da gaitu Nginx plugin normala ere izan ezean

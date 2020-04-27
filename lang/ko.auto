@@ -1,0 +1,15 @@
+feat_name=Nginx SSL 웹 사이트
+feat_losing=Nginx 가상 호스트는 더 이상 SSL 연결을 허용하지 않습니다
+feat_disname=Nginx SSL 웹 사이트
+feat_label=Nginx SSL 웹 사이트를 사용 하시겠습니까?
+feat_label2=Nginx SSL 웹 사이트가 활성화 되었습니까?
+feat_nginx=일반 웹 사이트가 아닌 경우 SSL 웹 사이트를 사용할 수 없습니다
+feat_setup=Nginx 가상 호스트에 SSL 추가 ..
+feat_delete=Nginx 가상 호스트에서 SSL 제거 ..
+feat_esslcert=Nginx 가상 호스트에 지정된 SSL 인증서 파일이 없습니다.
+feat_esslcertfile=SSL 인증서 파일 $1 이 (가) 없습니다
+feat_esslkey=Nginx 가상 호스트에 지정된 SSL 개인 키 파일이 없습니다.
+feat_esslkeyfile=SSL 개인 키 파일 $1 이 (가) 없습니다
+feat_modifyport=Nginx 구성에서 SSL 포트 변경 ..
+feat_sslclash=SSL은 Nginx 가상 호스트 $3 에 대해 이미 활성화되어 있으므로 IP 주소 $1 및 포트 $2 에서 활성화 할 수 없습니다.
+feat_eplugindep=일반 Nginx 플러그인이 아닌 경우 Nginx SSL 웹 사이트 플러그인을 활성화 할 수 없습니다

@@ -1,0 +1,15 @@
+feat_name=Nginx SSL网站
+feat_losing=Nginx虚拟主机将不再接受SSL连接
+feat_disname=Nginx SSL网站
+feat_label=启用Nginx SSL网站？
+feat_label2=Nginx SSL网站已启用？
+feat_nginx=除非启用常规网站，否则无法启用SSL网站
+feat_setup=将SSL添加到Nginx虚拟主机 ..
+feat_delete=从Nginx虚拟主机中删除SSL ..
+feat_esslcert=在Nginx虚拟主机中未指定SSL证书文件
+feat_esslcertfile=SSL证书文件 $1不存在
+feat_esslkey=在Nginx虚拟主机中未指定SSL私钥文件
+feat_esslkeyfile=SSL私钥文件 $1不存在
+feat_modifyport=在Nginx配置中更改SSL端口
+feat_sslclash=无法在IP地址 $1和端口 $2上启用SSL，因为它已为Nginx虚拟主机 $3激活
+feat_eplugindep=除非常规Nginx插件也是如此，否则无法启用Nginx SSL网站插件

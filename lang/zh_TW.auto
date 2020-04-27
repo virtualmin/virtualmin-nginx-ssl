@@ -1,0 +1,15 @@
+feat_name=Nginx SSL網站
+feat_losing=Nginx虛擬主機將不再接受SSL連接
+feat_disname=Nginx SSL網站
+feat_label=啟用Nginx SSL網站？
+feat_label2=Nginx SSL網站已啟用？
+feat_nginx=除非啟用常規網站，否則無法啟用SSL網站
+feat_setup=將SSL添加到Nginx虛擬主機 ..
+feat_delete=從Nginx虛擬主機中刪除SSL ..
+feat_esslcert=在Nginx虛擬主機中未指定SSL證書文件
+feat_esslcertfile=SSL證書文件 $1不存在
+feat_esslkey=在Nginx虛擬主機中未指定SSL私鑰文件
+feat_esslkeyfile=SSL私鑰文件 $1不存在
+feat_modifyport=在Nginx配置中更改SSL端口
+feat_sslclash=無法在IP地址 $1和端口 $2上啟用SSL，因為它已為Nginx虛擬主機 $3激活
+feat_eplugindep=除非常規Nginx插件也是如此，否則無法啟用Nginx SSL網站插件

@@ -1,0 +1,15 @@
+feat_name=وب سایت Nginx SSL
+feat_losing=میزبان مجازی Nginx دیگر اتصالات SSL را نمی پذیرد
+feat_disname=وب سایت Nginx SSL
+feat_label=وب سایت Nginx SSL را فعال کنید؟
+feat_label2=وب سایت Nginx SSL فعال شده است؟
+feat_nginx=وب سایت SSL را نمی توان فعال کرد مگر اینکه یک وب سایت معمولی باشد
+feat_setup=افزودن SSL به هاست مجازی Nginx ..
+feat_delete=حذف SSL از میزبان مجازی Nginx ..
+feat_esslcert=هیچ پرونده گواهی SSL در میزبان مجازی Nginx مشخص نشده است
+feat_esslcertfile=پرونده گواهی SSL $1 وجود ندارد
+feat_esslkey=هیچ پرونده کلید خصوصی SSL که در هاست مجازی Nginx مشخص شده است
+feat_esslkeyfile=پرونده کلید خصوصی SSL $1 وجود ندارد
+feat_modifyport=تغییر درگاه SSL در پیکربندی Nginx ..
+feat_sslclash=SSL نمی تواند در آدرس IP $1 و درگاه$2 فعال شود ، زیرا در حال حاضر برای میزبان مجازی Nginx $3 فعال است
+feat_eplugindep=افزونه وب سایت Nginx SSL نمی تواند فعال شود مگر اینکه افزونه معمولی Nginx بیش از حد باشد

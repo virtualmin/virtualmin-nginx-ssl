@@ -1,0 +1,15 @@
+feat_name=Nginx SSL-webbplats
+feat_losing=Den virtuella Nginx-värden accepterar inte längre SSL-anslutningar
+feat_disname=Nginx SSL-webbplats
+feat_label=Aktivera Nginx SSL-webbplats?
+feat_label2=Nginx SSL-webbplats aktiverad?
+feat_nginx=En SSL-webbplats kan inte aktiveras om inte en vanlig webbplats är det
+feat_setup=Lägger till SSL till virtuell värd Nginx ..
+feat_delete=Tar bort SSL från virtuell värd Nginx ..
+feat_esslcert=Ingen SSL-certifikatfil anges i den virtuella Nginx-värden
+feat_esslcertfile=SSL-certifikatfil $1 finns inte
+feat_esslkey=Ingen privat SSL-nyckelfil specificerad i den virtuella Nginx-värden
+feat_esslkeyfile=SSL-nyckelfil $1 finns inte
+feat_modifyport=Ändrar SSL-port i Nginx-konfiguration ..
+feat_sslclash=SSL kan inte aktiveras på IP-adress $1 och port $2, eftersom den redan är aktiv för Nginx virtuella värd $3 
+feat_eplugindep=Nginx SSL-webbplugin kan inte aktiveras om inte den vanliga Nginx-plugin också

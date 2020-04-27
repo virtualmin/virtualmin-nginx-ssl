@@ -1,0 +1,15 @@
+feat_name=Nginx SSL nettsted
+feat_losing=Den virtuelle Nginx-verten vil ikke lenger godta SSL-tilkoblinger
+feat_disname=Nginx SSL nettsted
+feat_label=Vil du aktivere Nginx SSL-nettsted?
+feat_label2=Nginx SSL-nettsted aktivert?
+feat_nginx=Et SSL-nettsted kan ikke aktiveres med mindre et vanlig nettsted er det
+feat_setup=Legger SSL til Nginx virtuell vert ..
+feat_delete=Fjerner SSL fra Nginx virtuell vert ..
+feat_esslcert=Ingen SSL-sertifikatfil spesifisert i den virtuelle Nginx-verten
+feat_esslcertfile=SSL-sertifikatfil $1 eksisterer ikke
+feat_esslkey=Ingen privat nøkkelfil for SSL spesifisert i den virtuelle Nginx-verten
+feat_esslkeyfile=SSL-nøkkelfil $1 eksisterer ikke
+feat_modifyport=Endre SSL-port i Nginx-konfigurasjon ..
+feat_sslclash=SSL kan ikke aktiveres på IP-adresse $1 og port $2, siden den allerede er aktiv for Nginx virtuell vert $3 
+feat_eplugindep=Nginx SSL-programtillegget kan ikke aktiveres med mindre den vanlige Nginx-plugin-en er

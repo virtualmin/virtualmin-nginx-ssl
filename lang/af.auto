@@ -1,0 +1,15 @@
+feat_name=Nginx SSL webwerf
+feat_losing=Die Nginx-virtuele gasheer sal nie meer SSL-verbindings aanvaar nie
+feat_disname=Nginx SSL webwerf
+feat_label=Aktiveer Nginx SSL-webwerf?
+feat_label2=Nginx SSL-webwerf geaktiveer?
+feat_nginx='N SSL-webwerf kan nie geaktiveer word tensy 'n gewone webwerf dit is nie
+feat_setup=SSL voeg by virtuele gasheer Nginx ..
+feat_delete=Verwyder SSL van Nginx-virtuele gasheer ..
+feat_esslcert=Geen SSL-sertifikaatlêer is gespesifiseer in die Nginx-virtuele gasheer nie
+feat_esslcertfile=SSL-sertifikaatlêer $1 bestaan nie
+feat_esslkey=Geen SSL-privaat-sleutellêer is gespesifiseer in die Nginx-virtuele gasheer nie
+feat_esslkeyfile=SSL-privaat sleutellêer $1 bestaan nie
+feat_modifyport=Verander SSL-poort in Nginx-konfigurasie ..
+feat_sslclash=SSL kan nie op IP-adres $1 en poort $2 geaktiveer word nie, aangesien dit reeds aktief is vir Nginx-virtuele gasheer $3 
+feat_eplugindep=Die Nginx SSL-webwerf-inprop kan nie geaktiveer word nie, tensy die gewone Nginx-inprop ook is

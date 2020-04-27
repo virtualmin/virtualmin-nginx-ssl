@@ -1,0 +1,15 @@
+feat_name=Nginx SSL Webサイト
+feat_losing=Nginx仮想ホストはSSL接続を受け入れなくなります
+feat_disname=Nginx SSL Webサイト
+feat_label=Nginx SSL Webサイトを有効にしますか？
+feat_label2=Nginx SSL Webサイトは有効ですか？
+feat_nginx=通常のWebサイトが有効でない限り、SSL Webサイトを有効にすることはできません。
+feat_setup=Nginx仮想ホストへのSSLの追加 ..
+feat_delete=Nginx仮想ホストからSSLを削除しています ..
+feat_esslcert=Nginx仮想ホストでSSL証明書ファイルが指定されていません
+feat_esslcertfile=SSL証明書ファイル $1は存在しません
+feat_esslkey=Nginx仮想ホストでSSL秘密鍵ファイルが指定されていません
+feat_esslkeyfile=SSL秘密鍵ファイル $1は存在しません
+feat_modifyport=Nginx構成でのSSLポートの変更 ..
+feat_sslclash=Nginx仮想ホスト $3に対してすでにアクティブになっているため、IPアドレス $1およびポート $2でSSLを有効にできません
+feat_eplugindep=Nginx SSL Webサイトプラグインは、通常のNginxプラグインも有効にしない限り有効にできません

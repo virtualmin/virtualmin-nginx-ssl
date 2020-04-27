@@ -1,0 +1,15 @@
+feat_name=אתר SSL של Nginx
+feat_losing=המארח הווירטואלי של Nginx כבר לא יקבל חיבורי SSL
+feat_disname=אתר SSL של Nginx
+feat_label=אפשר אתר Nginx SSL?
+feat_label2=Nginx SSL מופעל?
+feat_nginx=לא ניתן להפעיל אתר SSL אלא אם כן אתר רגיל
+feat_setup=מוסיף SSL למארח הווירטואלי של Nginx ..
+feat_delete=מסיר SSL מהמארח הווירטואלי של Nginx ..
+feat_esslcert=אין קובץ אישור SSL שצוין במארח הווירטואלי של Nginx
+feat_esslcertfile=קובץ אישור SSL $1 אינו קיים
+feat_esslkey=אין קובץ מפתח פרטי של SSL שצוין במארח הווירטואלי של Nginx
+feat_esslkeyfile=קובץ המפתח הפרטי של SSL $1 אינו קיים
+feat_modifyport=שינוי יציאת SSL בתצורת Nginx ..
+feat_sslclash=לא ניתן להפעיל SSL בכתובת IP $1 וביציאה $2, מכיוון שהיא כבר פעילה עבור מארח וירטואלי Nginx $3 
+feat_eplugindep=לא ניתן להפעיל את התוסף Nginx SSL לאתר אלא אם כן התוסף הרגיל של Nginx הוא

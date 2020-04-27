@@ -1,0 +1,15 @@
+feat_name=Witryna Nginx SSL
+feat_losing=Wirtualny host Nginx nie będzie już akceptował połączeń SSL
+feat_disname=Witryna Nginx SSL
+feat_label=Włączyć witrynę Nginx SSL?
+feat_label2=Czy witryna Nginx SSL jest włączona?
+feat_nginx=Witryny SSL nie można włączyć, chyba że jest to zwykła witryna internetowa
+feat_setup=Dodanie SSL do wirtualnego hosta Nginx ..
+feat_delete=Usuwanie SSL z wirtualnego hosta Nginx ..
+feat_esslcert=Brak pliku certyfikatu SSL na hoście wirtualnym Nginx
+feat_esslcertfile=Plik certyfikatu SSL $1 nie istnieje
+feat_esslkey=W hoście wirtualnym Nginx nie określono pliku klucza prywatnego SSL
+feat_esslkeyfile=Plik klucza prywatnego SSL $1 nie istnieje
+feat_modifyport=Zmiana portu SSL w konfiguracji Nginx ..
+feat_sslclash=SSL nie można włączyć dla adresu IP $1 i portu $2, ponieważ jest on już aktywny dla wirtualnego hosta Nginx $3 
+feat_eplugindep=Wtyczka Nginx SSL do strony internetowej nie może zostać włączona, chyba że zwykła wtyczka Nginx też jest

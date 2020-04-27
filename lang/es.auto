@@ -1,0 +1,15 @@
+feat_name=Sitio web SSL de Nginx
+feat_losing=El host virtual Nginx ya no aceptará conexiones SSL
+feat_disname=Sitio web SSL de Nginx
+feat_label=¿Habilitar el sitio web Nginx SSL?
+feat_label2=¿Sitio web SSL de Nginx habilitado?
+feat_nginx=Un sitio web SSL no se puede habilitar a menos que un sitio web normal sea
+feat_setup=Agregar SSL al host virtual Nginx.
+feat_delete=Eliminando SSL del host virtual Nginx.
+feat_esslcert=No se especificó ningún archivo de certificado SSL en el host virtual Nginx
+feat_esslcertfile=El archivo de certificado SSL $1 no existe
+feat_esslkey=No se especificó un archivo de clave privada SSL en el host virtual Nginx
+feat_esslkeyfile=El archivo de clave privada SSL $1 no existe
+feat_modifyport=Cambio de puerto SSL en la configuración de Nginx.
+feat_sslclash=SSL no se puede habilitar en la dirección IP $1 y el puerto $2, ya que está activo para el host virtual Nginx $3 
+feat_eplugindep=El complemento del sitio web SSL de Nginx no se puede habilitar a menos que el complemento normal de Nginx también lo esté

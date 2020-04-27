@@ -1,0 +1,15 @@
+feat_name=Nginx SSL webhely
+feat_losing=A Nginx virtuális gazdagép már nem fogadja el az SSL kapcsolatokat
+feat_disname=Nginx SSL webhely
+feat_label=Engedélyezi az Nginx SSL webhelyet?
+feat_label2=Nginx SSL webhely engedélyezve van?
+feat_nginx=Az SSL webhely csak akkor engedélyezhető, ha normál webhely van
+feat_setup=SSL hozzáadása a Nginx virtuális gazdagéphez ..
+feat_delete=SSL eltávolítása az Nginx virtuális gazdagépről ..
+feat_esslcert=Nginx virtuális gazdagépben nincs megadva SSL tanúsítványfájl
+feat_esslcertfile=A (z) $1 SSL tanúsítványfájl nem létezik
+feat_esslkey=Nginx virtuális gazdagépben nincs megadva SSL privát kulcsfájl
+feat_esslkeyfile=A (z) $1 SSL privát kulcsfájl nem létezik
+feat_modifyport=Az SSL port megváltoztatása Nginx konfigurációban ..
+feat_sslclash=Az SSL nem engedélyezhető a $1 IP-címen és a $2 -es porton, mivel az már aktív az Nginx $3 virtuális gazdagépen
+feat_eplugindep=Az Nginx SSL webhely-bővítmény csak akkor engedélyezhető, ha a normál Nginx-bővítmény szintén nem engedélyezett

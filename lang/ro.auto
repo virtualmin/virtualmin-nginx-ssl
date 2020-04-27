@@ -1,0 +1,15 @@
+feat_name=Site-ul Nginx SSL
+feat_losing=Gazda virtuală Nginx nu va mai accepta conexiuni SSL
+feat_disname=Site-ul Nginx SSL
+feat_label=Activați site-ul Nginx SSL?
+feat_label2=Site-ul Nginx SSL activat?
+feat_nginx=Un site web SSL nu poate fi activat decât dacă este un site web obișnuit
+feat_setup=Adăugarea SSL la gazda virtuală Nginx ..
+feat_delete=Eliminarea SSL de la gazda virtuală Nginx ..
+feat_esslcert=Niciun fișier de certificare SSL specificat în gazda virtuală Nginx
+feat_esslcertfile=Fișierul certificat SSL $1 nu există
+feat_esslkey=Nu este specificat niciun fișier cheie privată SSL în gazda virtuală Nginx
+feat_esslkeyfile=Fișierul cu cheie privată SSL $1 nu există
+feat_modifyport=Schimbarea portului SSL în configurația Nginx ..
+feat_sslclash=SSL nu poate fi activat pe adresa IP $1 și port $2, deoarece este deja activ pentru gazda virtuală Nginx $3 
+feat_eplugindep=Pluginul site-ului Nginx SSL nu poate fi activat decât dacă pluginul Nginx obișnuit este prea

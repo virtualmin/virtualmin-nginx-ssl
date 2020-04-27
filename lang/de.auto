@@ -1,0 +1,15 @@
+feat_name=Nginx SSL-Website
+feat_losing=Der virtuelle Nginx-Host akzeptiert keine SSL-Verbindungen mehr
+feat_disname=Nginx SSL-Website
+feat_label=Nginx SSL-Website aktivieren?
+feat_label2=Nginx SSL Website aktiviert?
+feat_nginx=Eine SSL-Website kann nur aktiviert werden, wenn es sich um eine reguläre Website handelt
+feat_setup=Hinzufügen von SSL zum virtuellen Nginx-Host.
+feat_delete=Entfernen von SSL vom virtuellen Nginx-Host.
+feat_esslcert=Im virtuellen Nginx-Host wurde keine SSL-Zertifikatdatei angegeben
+feat_esslcertfile=Die SSL-Zertifikatdatei $1 ist nicht vorhanden
+feat_esslkey=Keine virtuelle SSL-Schlüsseldatei im virtuellen Nginx-Host angegeben
+feat_esslkeyfile=Die private SSL-Schlüsseldatei $1 ist nicht vorhanden
+feat_modifyport=Ändern des SSL-Ports in der Nginx-Konfiguration.
+feat_sslclash=SSL kann für IP-Adresse $1 und Port $2 nicht aktiviert werden, da es bereits für den virtuellen Nginx-Host $3 aktiv ist
+feat_eplugindep=Das Nginx SSL-Website-Plugin kann nur aktiviert werden, wenn auch das reguläre Nginx-Plugin vorhanden ist

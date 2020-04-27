@@ -1,0 +1,15 @@
+feat_name=Web mjesto Nginx SSL-a
+feat_losing=Nginx virtualni domaćin više neće prihvaćati SSL veze
+feat_disname=Web mjesto Nginx SSL-a
+feat_label=Želite li omogućiti web lokaciju Nginx SSL?
+feat_label2=Web lokacija Nginx SSL je omogućena?
+feat_nginx=SSL web mjesto nije moguće omogućiti ako nije uobičajena web stranica
+feat_setup=Dodavanje SSL-a u virtualni host Nginx ..
+feat_delete=Uklanjanje SSL-a iz virtualnog domaćina Nginx ..
+feat_esslcert=U virtualnom hostu Nginx nije navedena datoteka SSL certifikata
+feat_esslcertfile=SSL datoteka certifikata $1 ne postoji
+feat_esslkey=U virtualnom hostu Nginx nije navedena datoteka SSL privatnog ključa
+feat_esslkeyfile=Datoteka SSL privatnog ključa $1 ne postoji
+feat_modifyport=Promjena SSL priključka u Nginx konfiguraciji.
+feat_sslclash=SSL ne može biti omogućen na IP adresi $1 i priključku $2, jer je već aktivan za Nginx virtualni host $3 
+feat_eplugindep=Dodatak za web lokaciju Nginx SSL ne može biti omogućen osim ako je ni redoviti dodatak Nginx

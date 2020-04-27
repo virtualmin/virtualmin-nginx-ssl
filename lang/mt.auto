@@ -1,0 +1,15 @@
+feat_name=Nginx SSL websajt
+feat_losing=L-ospitanti virtwali Nginx m'għadhomx jaċċettaw konnessjonijiet SSL
+feat_disname=Nginx SSL websajt
+feat_label=Jippermetti l-websajt Nginx SSL?
+feat_label2=Nginx SSL-websajt attivata?
+feat_nginx=Websajt SSL ma tistax tiġi attivata sakemm websajt regolari ma tkunx
+feat_setup=Iż-żieda ta 'SSL lill-host virtwali Nginx ..
+feat_delete=Tneħħi SSL mill-host virtwali Nginx ..
+feat_esslcert=L-ebda fajl ta 'ċertifikat SSL speċifikat fl-ospitanti virtwali Nginx
+feat_esslcertfile=Il-fajl taċ-ċertifikat SSL $1 ma jeżistix
+feat_esslkey=L-ebda fajl ewlieni SSL speċifikat fl-ospitanti virtwali Nginx
+feat_esslkeyfile=Fajl privat SSL $1 ma jeżistix
+feat_modifyport=Nibdlu port SSL fil-konfigurazzjoni Nginx ..
+feat_sslclash=L-SSL ma jistax ikun attivat fuq l-indirizz IP $1 u l-port $2, peress li huwa diġà attiv għal Nginx virtwali $3 
+feat_eplugindep=Il-plugin tal-websajt Nginx SSL ma jistax ikun attivat sakemm il-plugin Nginx regolari jkun iżżejjed

@@ -1,0 +1,15 @@
+feat_name=Уебсайт на Nginx SSL
+feat_losing=Виртуалният хост на Nginx вече няма да приема SSL връзки
+feat_disname=Уебсайт на Nginx SSL
+feat_label=Да активирате уебсайта на Nginx SSL?
+feat_label2=Разрешен ли е уебсайтът на Nginx SSL?
+feat_nginx=SSL уебсайт не може да бъде активиран, освен ако не е обикновен уебсайт
+feat_setup=Добавяне на SSL към виртуален хост на Nginx ..
+feat_delete=Премахване на SSL от виртуален хост на Nginx ..
+feat_esslcert=Не е посочен SSL файл на сертификат във виртуален хост Nginx
+feat_esslcertfile=SSL файл със сертификат $1 не съществува
+feat_esslkey=Не е посочен SSL файл с частен ключ във виртуален хост на Nginx
+feat_esslkeyfile=SSL файл с частен ключ $1 не съществува
+feat_modifyport=Промяна на SSL порт в конфигурация Nginx ..
+feat_sslclash=SSL не може да бъде активиран на IP адрес $1 и порт $2, тъй като той вече е активен за виртуален хост Nginx $3 
+feat_eplugindep=Плъгинът за уебсайтове на Nginx не може да бъде активиран, освен ако обикновеният плъгин за Nginx не е твърде

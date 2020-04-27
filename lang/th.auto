@@ -1,0 +1,15 @@
+feat_name=เว็บไซต์ Nginx SSL
+feat_losing=โฮสต์เสมือน Nginx จะไม่ยอมรับการเชื่อมต่อ SSL อีกต่อไป
+feat_disname=เว็บไซต์ Nginx SSL
+feat_label=เปิดใช้งานเว็บไซต์ Nginx SSL หรือไม่
+feat_label2=เปิดใช้งานเว็บไซต์ SSL Nginx แล้วหรือยัง
+feat_nginx=ไม่สามารถเปิดใช้งานเว็บไซต์ SSL ได้ยกเว้นว่าเป็นเว็บไซต์ปกติ
+feat_setup=การเพิ่ม SSL ให้กับโฮสต์เสมือน Nginx
+feat_delete=การลบ SSL ออกจากโฮสต์เสมือน Nginx ..
+feat_esslcert=ไม่ได้ระบุไฟล์ใบรับรอง SSL ไว้ในโฮสต์เสมือน Nginx
+feat_esslcertfile=ไม่มีไฟล์ใบรับรอง SSL $1 
+feat_esslkey=ไม่ได้ระบุไฟล์คีย์ส่วนตัว SSL ในโฮสต์เสมือน Nginx
+feat_esslkeyfile=ไฟล์คีย์ส่วนตัว SSL $1 ไม่มีอยู่
+feat_modifyport=การเปลี่ยนพอร์ต SSL ในการกำหนดค่า Nginx ..
+feat_sslclash=ไม่สามารถเปิดใช้งาน SSL บนที่อยู่ IP $1 และพอร์ต $2 เนื่องจากมีการใช้งานแล้วสำหรับโฮสต์เสมือน Nginx $3 
+feat_eplugindep=ไม่สามารถเปิดใช้งานปลั๊กอินเว็บไซต์ Nginx SSL เว้นแต่ว่าปลั๊กอิน Nginx ปกติก็เช่นกัน

@@ -1,0 +1,15 @@
+feat_name=Web Nginx SSL
+feat_losing=Virtuální hostitel Nginx již nepřijme připojení SSL
+feat_disname=Web Nginx SSL
+feat_label=Povolit web Nginx SSL?
+feat_label2=Web Nginx SSL povolen?
+feat_nginx=Web SSL nelze povolit, pokud není běžný web
+feat_setup=Přidání SSL do virtuálního hostitele Nginx.
+feat_delete=Odebírání SSL z virtuálního hostitele Nginx ..
+feat_esslcert=Ve virtuálním hostiteli Nginx nebyl zadán žádný soubor certifikátů SSL
+feat_esslcertfile=Soubor certifikátu SSL $1 neexistuje
+feat_esslkey=Ve virtuálním hostiteli Nginx nebyl zadán žádný soubor soukromého klíče SSL
+feat_esslkeyfile=Soubor soukromého klíče SSL $1 neexistuje
+feat_modifyport=Změna portu SSL v konfiguraci Nginx.
+feat_sslclash=SSL nelze povolit na IP adrese $1 a portu $2, protože je již aktivní pro virtuálního hostitele Nginx $3 
+feat_eplugindep=Plugin webových stránek Nginx SSL nelze povolit, pokud není také běžný plugin Nginx

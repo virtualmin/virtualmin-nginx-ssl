@@ -1,0 +1,15 @@
+feat_name=موقع Nginx SSL
+feat_losing=لن يقبل مضيف Nginx الظاهري اتصالات SSL
+feat_disname=موقع Nginx SSL
+feat_label=هل تريد تفعيل موقع Nginx SSL؟
+feat_label2=تم تفعيل موقع Nginx SSL؟
+feat_nginx=لا يمكن تمكين موقع SSL ما لم يكن موقع ويب عادي
+feat_setup=إضافة SSL إلى مضيف Nginx الظاهري ..
+feat_delete=إزالة SSL من مضيف Nginx الظاهري ..
+feat_esslcert=لم يتم تحديد ملف شهادة SSL في مضيف Nginx الظاهري
+feat_esslcertfile=ملف شهادة SSL $1 غير موجود
+feat_esslkey=لم يتم تحديد ملف مفتاح SSL خاص في مضيف Nginx الظاهري
+feat_esslkeyfile=ملف المفتاح الخاص لـ SSL $1 غير موجود
+feat_modifyport=تغيير منفذ SSL في تكوين Nginx ..
+feat_sslclash=لا يمكن تمكين SSL على عنوان IP $1 والمنفذ$2 ، لأنه نشط بالفعل لمضيف Nginx الظاهري$3
+feat_eplugindep=لا يمكن تمكين المكوّن الإضافي لموقع Nginx SSL إلا إذا كان المكوّن الإضافي Nginx العادي أيضًا

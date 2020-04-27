@@ -1,0 +1,15 @@
+feat_name=Nginx SSL -sivusto
+feat_losing=Nginx-virtuaalinen isäntä ei enää hyväksy SSL-yhteyksiä
+feat_disname=Nginx SSL -sivusto
+feat_label=Ota Nginx SSL -sivusto käyttöön?
+feat_label2=Nginx SSL -sivusto käytössä?
+feat_nginx=SSL-verkkosivustoa ei voi ottaa käyttöön, ellei tavallinen verkkosivusto ole
+feat_setup=SSL: n lisääminen Nginx-virtuaaliseen isäntään ..
+feat_delete=SSL: n poistaminen Nginx-virtuaalisäntästä ..
+feat_esslcert=Nginx-virtuaalipalvelimessa ei määritetty SSL-varmennetiedostoa
+feat_esslcertfile=SSL-varmennetiedostoa $1 ei ole
+feat_esslkey=Nginx-virtuaalipalvelimessa ei ole määritetty SSL-yksityisen avaintiedostoa
+feat_esslkeyfile=SSL-yksityisen avaintiedostoa $1 ei ole
+feat_modifyport=SSL-portin vaihtaminen Nginx-kokoonpanossa ..
+feat_sslclash=SSL: tä ei voi ottaa käyttöön IP-osoitteissa $1 ja portissa $2, koska se on jo aktiivinen Nginx-virtuaalipalvelimelle $3 
+feat_eplugindep=Nginx SSL -sivuston laajennusta ei voi ottaa käyttöön, ellei tavallinen Nginx-laajennus ole liian

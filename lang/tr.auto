@@ -1,0 +1,15 @@
+feat_name=Nginx SSL web sitesi
+feat_losing=Nginx sanal ana makinesi artık SSL bağlantılarını kabul etmeyecek
+feat_disname=Nginx SSL web sitesi
+feat_label=Nginx SSL web sitesi etkinleştirilsin mi?
+feat_label2=Nginx SSL web sitesi etkin mi?
+feat_nginx=SSL web sitesi, normal bir web sitesi olmadıkça etkinleştirilemez
+feat_setup=Nginx sanal ana bilgisayarına SSL ekleniyor ..
+feat_delete=Nginx sanal ana bilgisayarından SSL kaldırılıyor ..
+feat_esslcert=Nginx sanal ana bilgisayarında SSL sertifika dosyası belirtilmedi
+feat_esslcertfile=$1 SSL sertifika dosyası mevcut değil
+feat_esslkey=Nginx sanal ana bilgisayarında SSL özel anahtar dosyası belirtilmedi
+feat_esslkeyfile=$1 SSL özel anahtar dosyası mevcut değil
+feat_modifyport=Nginx yapılandırmasında SSL bağlantı noktasını değiştirme ..
+feat_sslclash=SSL, $1 IP adresinde ve $2 bağlantı noktasında etkinleştirilemiyor, çünkü $3 Nginx sanal ana bilgisayarı için zaten etkin
+feat_eplugindep=Nginx SSL web sitesi eklentisi, normal Nginx eklentisi de olmadığı sürece etkinleştirilemez

@@ -1,0 +1,15 @@
+feat_name=Веб-сайт Nginx SSL
+feat_losing=Віртуальний хост Nginx більше не прийме з'єднання SSL
+feat_disname=Веб-сайт Nginx SSL
+feat_label=Увімкнути веб-сайт Nginx SSL?
+feat_label2=Включений веб-сайт Nginx SSL?
+feat_nginx=Веб-сайт SSL неможливо увімкнути, якщо не є звичайний веб-сайт
+feat_setup=Додавання SSL до віртуального хоста Nginx ..
+feat_delete=Видалення SSL з віртуального хоста Nginx ..
+feat_esslcert=У віртуальному хості Nginx не вказаний файл сертифіката SSL
+feat_esslcertfile=Файл сертифіката SSL $1 не існує
+feat_esslkey=У віртуальному хості Nginx не вказаний файл приватного ключа SSL
+feat_esslkeyfile=Файл приватного ключа SSL $1 не існує
+feat_modifyport=Зміна порту SSL в конфігурації Nginx ..
+feat_sslclash=SSL не можна включити на IP-адресу $1 та порт $2, оскільки він вже активний для віртуального хоста Nginx $3 
+feat_eplugindep=Плагін веб-сайту Nginx SSL не може бути включений, якщо звичайний плагін Nginx теж не є
