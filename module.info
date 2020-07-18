@@ -1,6 +1,6 @@
 desc=Nginx Webserver SSL
 category=servers
-version=1.11
+version=1.12
 readonly=1
 depends=virtualmin-nginx virtual-server
 hidden=1
