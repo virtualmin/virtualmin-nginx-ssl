@@ -163,7 +163,7 @@ $d->{'web_ssl_samechain'} = 1;
 &virtual_server::find_matching_certificate($d);
 
 # Create a self-signed cert and key, if needed
-&virtual_server::generate_default_certificate($d);
+my $generated = &virtual_server::generate_default_certificate($d);
 
 # Add to the non-SSL server block
 &$virtual_server::first_print($text{'feat_setup'});
@@ -250,20 +250,18 @@ if ($d->{'ssl_chain'}) {
 &virtualmin_nginx::unlock_all_config_files();
 &virtual_server::register_post_action(\&virtualmin_nginx::print_apply_nginx);
 
-# Add this IP and cert to Webmin/Usermin's SSL keys list
-if ($tmpl->{'web_webmin_ssl'}) {
-        &virtual_server::setup_ipkeys($d,
-		\&get_miniserv_config,
-		\&put_miniserv_config,
-		\&virtual_server::restart_webmin_fully);
-        }
-if ($tmpl->{'web_usermin_ssl'} && &foreign_installed("usermin")) {
-        &foreign_require("usermin");
-        &virtual_server::setup_ipkeys($d,
-		\&usermin::get_usermin_miniserv_config,
-		\&usermin::put_usermin_miniserv_config,
-		\&virtual_server::restart_usermin);
-        }
+# Add cert in Webmin, Dovecot, etc..
+&virtual_server::enable_domain_service_ssl_certs($d);
+
+# Update DANE DNS records
+&virtual_server::sync_domain_tlsa_records($d);
+
+# Try to request a Let's Encrypt cert when enabling SSL post-creation for
+# the first time
+if (!$d->{'creating'} && $generated && $d->{'auto_letsencrypt'} &&
+    !$d->{'disabled'}) {
+	&virtual_server::create_initial_letsencrypt_cert($d);
+	}
 
 &$virtual_server::second_print($virtual_server::text{'setup_done'});
 }
@@ -378,20 +376,30 @@ if ($d->{'dom'} ne $oldd->{'dom'} &&
 	$changed++;
         }
 
-# If IP address has changed, fix per-IP SSL certs
+# If anything has changed that would impact the per-domain SSL cert for
+# another server like Postfix or Webmin, re-set it up as long as it is supported
+# with the new settings
 if ($d->{'ip'} ne $oldd->{'ip'} ||
+    $d->{'virt'} != $oldd->{'virt'} ||
+    $d->{'dom'} ne $oldd->{'dom'} ||
     $d->{'home'} ne $oldd->{'home'}) {
-	&virtual_server::modify_ipkeys($d, $oldd, \&get_miniserv_config,
-                       \&put_miniserv_config,
-                       \&virtual_server::restart_webmin);
-        if (&foreign_installed("usermin")) {
-                &foreign_require("usermin", "usermin-lib.pl");
-                &virtual_server::modify_ipkeys($d, $oldd,
-                               \&usermin::get_usermin_miniserv_config,
-                               \&usermin::put_usermin_miniserv_config,
-                               \&virtual_server::restart_usermin);
+        my %types = map { $_->{'id'}, $_ }
+		&virtual_server::list_service_ssl_cert_types();
+        foreach my $svc (&virtual_server::get_all_domain_service_ssl_certs($oldd)) {
+		no strict 'refs';
+                next if (!$svc->{'d'});
+                my $t = $types{$svc->{'id'}};
+                my $func = "virtual_server::sync_".$svc->{'id'}."_ssl_cert";
+                next if (!defined(&$func));
+                &$func($oldd, 0);
+                if ($t->{'dom'} || $d->{'virt'}) {
+                        &$func($d, 1);
+                        }
                 }
         }
+
+# Update DANE DNS records
+&virtual_server::sync_domain_tlsa_records($d);
 
 # Flush files and restart
 &virtualmin_nginx::flush_config_file_lines();
@@ -416,6 +424,9 @@ if (!$server) {
                 &virtualmin_nginx::text('feat_efind', $d->{'dom'}));
         return 0;
 	}
+
+# Remove from Dovecot, Webmin, etc..
+&virtual_server::disable_domain_service_ssl_certs($d);
 
 # Turn off ssl
 &virtualmin_nginx::save_directive($server, "ssl", [ ]);
@@ -443,18 +454,8 @@ foreach my $l (@listen) {
 &virtualmin_nginx::unlock_all_config_files();
 &virtual_server::register_post_action(\&virtualmin_nginx::print_apply_nginx);
 
-# Delete per-IP SSL cert
-&virtual_server::delete_ipkeys($d,
-	\&get_miniserv_config,
-	\&put_miniserv_config,
-	\&virtual_server::restart_webmin_fully);
-if (&foreign_installed("usermin")) {
-        &foreign_require("usermin");
-        &virtual_server::delete_ipkeys($d,
-		\&usermin::get_usermin_miniserv_config,
-		\&usermin::put_usermin_miniserv_config,
-		\&virtual_server::restart_usermin);
-        }
+# Update DANE DNS records
+&virtual_server::sync_domain_tlsa_records($d);
 
 $d->{'web_ssl_samechain'} = 0;
 &$virtual_server::second_print($virtual_server::text{'setup_done'});
