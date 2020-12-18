@@ -223,15 +223,27 @@ if (!&find_listen_clash($d->{'ip'}, $d->{'web_sslport'})) {
 else {
 	push(@sslopts, 'ssl');
 	}
-if (!$old_ip4) {
-	push(@listen, { 'name' => 'listen',
-		        'words' => [ $d->{'ip'}.":".$d->{'web_sslport'},
-				     @sslopts ] });
+push(@sslopts, "http2") if ($virtualmin_nginx::config{'http2'});
+if ($virtualmin_nginx::config{'listen_mode'}) {
+	# Listen on all IPs
+	if (!$old_ip4 && !$old_ip6) {
+		push(@listen, { 'name' => 'listen',
+				'words' => [ $d->{'web_sslport'},
+					     @sslopts ] });
+		}
 	}
-if (!$old_ip6 && $d->{'ip6'}) {
-	push(@listen, { 'name' => 'listen',
-		        'words' => [ "[".$d->{'ip6'}."]:".$d->{'web_sslport'},
-				     @sslopts ]});
+else {
+	# Add on specific IPs
+	if (!$old_ip4) {
+		push(@listen, { 'name' => 'listen',
+				'words' => [ $d->{'ip'}.":".$d->{'web_sslport'},
+					     @sslopts ] });
+		}
+	if (!$old_ip6 && $d->{'ip6'}) {
+		push(@listen, { 'name' => 'listen',
+				'words' => [ "[".$d->{'ip6'}."]:".$d->{'web_sslport'},
+					     @sslopts ]});
+		}
 	}
 &virtualmin_nginx::save_directive($server, "listen", \@listen);
 
@@ -291,6 +303,9 @@ if ($d->{'web_sslport'} != $oldd->{'web_sslport'}) {
 		if ($p == $oldd->{'web_sslport'}) {
 			$w[0] =~ s/:\d+$//;
 			$w[0] .= ":".$d->{'web_sslport'};
+			}
+		elsif ($w[0] eq $oldd->{'web_sslport'}) {
+			$w[0] = $d->{'web_sslport'};
 			}
 		push(@newlisten, { 'words' => \@w });
 		}
@@ -480,6 +495,8 @@ foreach my $l (@listen) {
 		      $d->{'web_sslport'} == 80 ||
 		     $l =~ /^\Q$d->{'ip'}\E:(\d+)$/ &&
 		      $d->{'web_sslport'} == $1);
+	$found++ if ($l eq $d->{'web_sslport'} &&
+		     $virtualmin_nginx::config{'listen_mode'});
 	}
 $found || return &virtualmin_nginx::text('feat_evalidateip',
 					 $d->{'ip'}, $d->{'web_sslport'});
@@ -490,6 +507,8 @@ if ($d->{'virt6'}) {
 			       $d->{'web_sslport'} == 80 ||
 			      $l =~ /^\[\Q$d->{'ip6'}\E\]:(\d+)$/ &&
 			       $d->{'web_sslport'} == $1);
+		$found6++ if ($l eq $d->{'web_sslport'} &&
+			      $virtualmin_nginx::config{'listen_mode'});
 		}
 	$found6 || return &virtualmin_nginx::text('feat_evalidateip6',
 					  $d->{'ip6'}, $d->{'web_sslport'});
