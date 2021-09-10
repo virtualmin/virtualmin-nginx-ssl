@@ -216,13 +216,7 @@ if ($d->{'ip6'}) {
 	($old_ip6) = grep { $_->{'words'}->[0] eq
 		       "[".$d->{'ip6'}."]:".$d->{'web_sslport'} } @listen;
 	}
-my @sslopts;
-if (!&find_listen_clash($d->{'ip'}, $d->{'web_sslport'})) {
-	push(@sslopts, 'default', 'ssl');
-	}
-else {
-	push(@sslopts, 'ssl');
-	}
+my @sslopts = ( 'ssl' );
 push(@sslopts, "http2") if ($virtualmin_nginx::config{'http2'});
 if ($virtualmin_nginx::config{'listen_mode'}) {
 	# Listen on all IPs
@@ -240,6 +234,7 @@ else {
 					     @sslopts ] });
 		}
 	if (!$old_ip6 && $d->{'ip6'}) {
+		push(@sslopts, &virtualmin_nginx::get_default_server_param());
 		push(@listen, { 'name' => 'listen',
 				'words' => [ "[".$d->{'ip6'}."]:".$d->{'web_sslport'},
 					     @sslopts ]});
