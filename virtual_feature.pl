@@ -234,7 +234,9 @@ else {
 					     @sslopts ] });
 		}
 	if (!$old_ip6 && $d->{'ip6'}) {
-		push(@sslopts, &virtualmin_nginx::get_default_server_param());
+		if ($d->{'virt6'}) {
+			push(@sslopts, &virtualmin_nginx::get_default_server_param());
+			}
 		push(@listen, { 'name' => 'listen',
 				'words' => [ "[".$d->{'ip6'}."]:".$d->{'web_sslport'},
 					     @sslopts ]});
