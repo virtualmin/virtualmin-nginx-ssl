@@ -550,4 +550,10 @@ sub feature_clone
 return 1;
 }
 
+# Reset for SSL is done in the non-SSL feature
+sub feature_can_reset
+{
+return 0;
+}
+
 1;
