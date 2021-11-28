@@ -217,7 +217,8 @@ if ($d->{'ip6'}) {
 		       "[".$d->{'ip6'}."]:".$d->{'web_sslport'} } @listen;
 	}
 my @sslopts = ( 'ssl' );
-push(@sslopts, "http2") if ($virtualmin_nginx::config{'http2'});
+push(@sslopts, "http2") if ($virtualmin_nginx::config{'http2'} ||
+			    $tmpl->{'web_http2'});
 if ($virtualmin_nginx::config{'listen_mode'} eq '0') {
 	# Listen on all IPs
 	if (!$old_ip4 && !$old_ip6) {
