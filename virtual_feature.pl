@@ -438,9 +438,6 @@ if (!$server) {
         return 0;
 	}
 
-# Remove from Dovecot, Webmin, etc..
-&virtual_server::disable_domain_service_ssl_certs($d);
-
 # Turn off ssl
 &virtualmin_nginx::save_directive($server, "ssl", [ ]);
 &virtualmin_nginx::save_directive($server, "ssl_certificate", [ ]);
