@@ -350,7 +350,8 @@ if ($d->{'ip'} ne $oldd->{'ip'} && $oldd->{'ssl_same'}) {
 # Fix SSL cert file locations, if home has changed
 if ($d->{'home'} ne $oldd->{'home'}) {
         foreach my $k ('ssl_cert', 'ssl_key', 'ssl_chain') {
-                $d->{$k} =~ s/\Q$oldd->{'home'}\E\//$d->{'home'}\//;
+                $d->{$k} =~ s/\Q$oldd->{'home'}\E\//$d->{'home'}\//
+			if ($d->{$k});
                 }
 	}
 
