@@ -351,7 +351,7 @@ if ($d->{'ip'} ne $oldd->{'ip'} && $oldd->{'ssl_same'}) {
 if ($d->{'home'} ne $oldd->{'home'}) {
         foreach my $k ('ssl_cert', 'ssl_key', 'ssl_chain') {
                 $d->{$k} =~ s/\Q$oldd->{'home'}\E\//$d->{'home'}\//
-			if ($d->{$k});
+                    if ($d->{$k});
                 }
 	}
 
