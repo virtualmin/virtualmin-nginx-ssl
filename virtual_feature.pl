@@ -555,4 +555,30 @@ sub feature_can_reset
 return 0;
 }
 
+# Nginx SSL will be activated if a regular website is
+sub feature_can_chained
+{
+return 1;
+}
+
+# Returns 1 if the regular website is enabled and on by default
+sub feature_chained
+{
+my ($d, $oldd) = @_;
+if ($virtual_server::config{'plugins_inactive'} =~ /\Q$module_name\E/) {
+	# Not in auto mode
+	return undef;
+	}
+elsif ($d->{'virtualmin-nginx'}) {
+	if (!$oldd || !$oldd->{'virtualmin-nginx'}) {
+		# Turning on a website, so enable SSL as well
+		return 1;
+		}
+	}
+else {
+	# Always off when a website is
+	return 0;
+	}
+}
+
 1;
