@@ -558,14 +558,14 @@ return 0;
 # Nginx SSL will be activated if a regular website is
 sub feature_can_chained
 {
-return 1;
+return ('virtualmin-nginx');
 }
 
 # Returns 1 if the regular website is enabled and on by default
 sub feature_chained
 {
 my ($d, $oldd) = @_;
-if ($virtual_server::config{'plugins_inactive'} =~ /\Q$module_name\E/) {
+if (&indexof($module_name, @virtual_server::plugins_inactive) >= 0) {
 	# Not in auto mode
 	return undef;
 	}
