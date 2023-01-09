@@ -574,6 +574,7 @@ elsif ($d->{'virtualmin-nginx'}) {
 		# Turning on a website, so enable SSL as well
 		return 1;
 		}
+	return undef;
 	}
 else {
 	# Always off when a website is
