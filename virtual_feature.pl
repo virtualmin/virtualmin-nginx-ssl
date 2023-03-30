@@ -266,6 +266,11 @@ if ($d->{'ssl_chain'}) {
 # Update DANE DNS records
 &virtual_server::sync_domain_tlsa_records($d);
 
+# Redirect HTTP to HTTPS
+if ($tmpl->{'web_sslredirect'} || $d->{'auto_redirect'}) {
+        &virtual_server::create_redirect($d, &virtual_server::get_redirect_to_ssl($d));
+        }
+
 # Try to request a Let's Encrypt cert when enabling SSL post-creation for
 # the first time
 if (!$d->{'creating'} && $generated && $d->{'auto_letsencrypt'} &&
