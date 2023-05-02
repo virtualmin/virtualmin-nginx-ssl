@@ -547,10 +547,20 @@ return undef;
 }
 
 # feature_clone(&domain, &old-domain)
-# This function does nothing, but needs to exist so that the ssl feature is
-# preserved when cloning
+# This function does almost nothing, but needs to exist so that the ssl
+# feature is preserved when cloning
 sub feature_clone
 {
+my ($d, $oldd) = @_;
+
+# Is the linked SSL cert still valid for the new domain? If not, break the
+# linkage by copying over the cert.
+if ($d->{'ssl_same'} && !&virtual_server::check_domain_certificate($d->{'dom'}, $d)) {
+	my $oldsame = &virtual_server::get_domain($d->{'ssl_same'});
+	&virtual_server::break_ssl_linkage($d, $oldsame);
+	&virtual_server::sync_combined_ssl_cert($d);
+	}
+
 return 1;
 }
 
