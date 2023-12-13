@@ -470,6 +470,12 @@ foreach my $l (@listen) {
 &virtualmin_nginx::unlock_all_config_files();
 &virtual_server::register_post_action(\&virtualmin_nginx::print_apply_nginx);
 
+# If any other domains were using this one's SSL cert or key, break the linkage
+foreach my $od (&virtual_server::get_domain_by("ssl_same", $d->{'id'})) {
+	&virtual_server::break_ssl_linkage($od, $d);
+	&virtual_server::save_domain($od);
+	}
+
 # Update DANE DNS records
 &virtual_server::sync_domain_tlsa_records($d);
 
