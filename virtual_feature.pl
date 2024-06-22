@@ -164,6 +164,9 @@ $d->{'web_ssl_samechain'} = 1;
 
 # Create a self-signed cert and key, if needed
 my $generated = &virtual_server::generate_default_certificate($d);
+if (!$generated && !-r $d->{'ssl_cert'}) {
+	return 0;
+	}
 
 # Add to the non-SSL server block
 &$virtual_server::first_print($text{'feat_setup'});
