@@ -228,6 +228,9 @@ if ($virtualmin_nginx::config{'listen_mode'} eq '0') {
 		push(@listen, { 'name' => 'listen',
 				'words' => [ $d->{'web_sslport'},
 					     @sslopts ] });
+		push(@listen, { 'name' => 'listen',
+				'words' => [ '[::]:' . $d->{'web_sslport'},
+					     @sslopts ] });
 		}
 	}
 else {
