@@ -479,7 +479,9 @@ foreach my $l (@listen) {
 # If any other domains were using this one's SSL cert or key, break the linkage
 foreach my $od (&virtual_server::get_domain_by("ssl_same", $d->{'id'})) {
 	&virtual_server::break_ssl_linkage($od, $d);
+	&virtual_server::lock_domain($od);
 	&virtual_server::save_domain($od);
+	&virtual_server::unlock_domain($od);
 	}
 
 # Update DANE DNS records
