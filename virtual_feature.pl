@@ -90,7 +90,7 @@ sub feature_import
 my ($dname, $user, $db) = @_;
 my $server = &virtualmin_nginx::find_domain_server({ 'dom' => $dname });
 return 0 if (!$server);
-foreach my $l (&virtualmin_nginx::find("listen", $server)) {
+foreach my $l (&nginx::find("listen", $server)) {
 	return 1 if ($l->{'words'}->[0] =~ /:443$/);
 	}
 return 0;
@@ -170,10 +170,10 @@ if (!$generated && !-r $d->{'ssl_cert'}) {
 
 # Add to the non-SSL server block
 &$virtual_server::first_print($text{'feat_setup'});
-&virtualmin_nginx::lock_all_config_files();
+&nginx::lock_all_config_files();
 my $server = &virtualmin_nginx::find_domain_server($d);
 if (!$server) {
-	&virtualmin_nginx::unlock_all_config_files();
+	&nginx::unlock_all_config_files();
         &$virtual_server::second_print(
                 &virtualmin_nginx::text('feat_efind', $d->{'dom'}));
         return 0;
@@ -211,7 +211,7 @@ if ($err) {
         }
 
 # Add listen line
-my @listen = &virtualmin_nginx::find("listen", $server);
+my @listen = &nginx::find("listen", $server);
 my ($old_ip4) = grep { $_->{'words'}->[0] eq
 		       $d->{'ip'}.":".$d->{'web_sslport'} } @listen;
 my $old_ip6;
@@ -242,19 +242,19 @@ else {
 		}
 	if (!$old_ip6 && $d->{'ip6'}) {
 		if ($d->{'virt6'}) {
-			push(@sslopts, &virtualmin_nginx::get_default_server_param());
+			push(@sslopts, &nginx::get_default_server_param());
 			}
 		push(@listen, { 'name' => 'listen',
 				'words' => [ "[".$d->{'ip6'}."]:".$d->{'web_sslport'},
 					     @sslopts ]});
 		}
 	}
-&virtualmin_nginx::save_directive($server, "listen", \@listen);
+&nginx::save_directive($server, "listen", \@listen);
 
 # Enable SSL
-&virtualmin_nginx::save_directive($server, "ssl_certificate",
+&nginx::save_directive($server, "ssl_certificate",
 				  [ $d->{'ssl_cert'} ]);
-&virtualmin_nginx::save_directive($server, "ssl_certificate_key",
+&nginx::save_directive($server, "ssl_certificate_key",
 				  [ $d->{'ssl_key'} ]);
 if ($d->{'ssl_chain'}) {
 	# Add chained cert to main cert file
@@ -262,8 +262,8 @@ if ($d->{'ssl_chain'}) {
 		$d, 'ca', $d->{'ssl_chain'});
 	}
 
-&virtualmin_nginx::flush_config_file_lines();
-&virtualmin_nginx::unlock_all_config_files();
+&nginx::flush_config_file_lines();
+&nginx::unlock_all_config_files();
 &virtual_server::register_post_action(\&virtualmin_nginx::print_apply_nginx);
 
 # Add cert in Webmin, Dovecot, etc..
@@ -292,7 +292,7 @@ sub feature_modify
 {
 my ($d, $oldd) = @_;
 
-&virtualmin_nginx::lock_all_config_files();
+&nginx::lock_all_config_files();
 my $changed = 0;
 
 # Update port, if changed
@@ -304,7 +304,7 @@ if ($d->{'web_sslport'} != $oldd->{'web_sslport'}) {
 			&virtualmin_nginx::text('feat_efind', $d->{'dom'}));
 		return 0;
 		}
-	my @listen = &virtualmin_nginx::find("listen", $server);
+	my @listen = &nginx::find("listen", $server);
 	my @newlisten;
 	foreach my $l (@listen) {
 		my @w = @{$l->{'words'}};
@@ -318,7 +318,7 @@ if ($d->{'web_sslport'} != $oldd->{'web_sslport'}) {
 			}
 		push(@newlisten, { 'words' => \@w });
 		}
-	&virtualmin_nginx::save_directive($server, "listen", \@newlisten);
+	&nginx::save_directive($server, "listen", \@newlisten);
 	&$virtual_server::second_print(
 		$virtual_server::text{'setup_done'});
 	$changed++;
@@ -427,8 +427,8 @@ if ($d->{'ip'} ne $oldd->{'ip'} ||
 &virtual_server::sync_domain_tlsa_records($d);
 
 # Flush files and restart
-&virtualmin_nginx::flush_config_file_lines();
-&virtualmin_nginx::unlock_all_config_files();
+&nginx::flush_config_file_lines();
+&nginx::unlock_all_config_files();
 if ($changed) {
 	&virtual_server::register_post_action(
 		\&virtualmin_nginx::print_apply_nginx);
@@ -441,25 +441,25 @@ sub feature_delete
 {
 my ($d) = @_;
 &$virtual_server::first_print($text{'feat_delete'});
-&virtualmin_nginx::lock_all_config_files();
+&nginx::lock_all_config_files();
 my $server = &virtualmin_nginx::find_domain_server($d);
 if (!$server) {
-	&virtualmin_nginx::unlock_all_config_files();
+	&nginx::unlock_all_config_files();
         &$virtual_server::second_print(
                 &virtualmin_nginx::text('feat_efind', $d->{'dom'}));
         return 0;
 	}
 
 # Turn off ssl
-&virtualmin_nginx::save_directive($server, "ssl", [ ]);
-&virtualmin_nginx::save_directive($server, "ssl_certificate", [ ]);
-&virtualmin_nginx::save_directive($server, "ssl_certificate_key", [ ]);
+&nginx::save_directive($server, "ssl", [ ]);
+&nginx::save_directive($server, "ssl_certificate", [ ]);
+&nginx::save_directive($server, "ssl_certificate_key", [ ]);
 
 # Remove SSL port listens
-my @listen = &virtualmin_nginx::find("listen", $server);
+my @listen = &nginx::find("listen", $server);
 my @newlisten;
 foreach my $l (@listen) {
-	my ($lip, $lport) = &virtualmin_nginx::split_ip_port(
+	my ($lip, $lport) = &nginx::split_ip_port(
 		$l->{'words'}->[0]);
 	if (&indexof("ssl", @{$l->{'words'}}) >= 0 ||
 	    $lip && $lport &&
@@ -470,10 +470,10 @@ foreach my $l (@listen) {
 		push(@newlisten, $l);
 		}
 	}
-&virtualmin_nginx::save_directive($server, "listen", \@newlisten);
+&nginx::save_directive($server, "listen", \@newlisten);
 
-&virtualmin_nginx::flush_config_file_lines();
-&virtualmin_nginx::unlock_all_config_files();
+&nginx::flush_config_file_lines();
+&nginx::unlock_all_config_files();
 &virtual_server::register_post_action(\&virtualmin_nginx::print_apply_nginx);
 
 # If any other domains were using this one's SSL cert or key, break the linkage
@@ -503,7 +503,7 @@ return &virtualmin_nginx::text('feat_evalidate',
 	"<tt>".&virtual_server::show_domain_name($d)."</tt>") if (!$server);
 
 # Check for IPs and port
-my @listen = &virtualmin_nginx::find_value("listen", $server);
+my @listen = &nginx::find_value("listen", $server);
 my $found = 0;
 foreach my $l (@listen) {
 	$found++ if ($l eq $d->{'ip'} &&
@@ -530,7 +530,7 @@ if ($d->{'virt6'}) {
 	}
 
 # Make sure cert file exists
-my $cert = &virtualmin_nginx::find_value("ssl_certificate", $server);
+my $cert = &nginx::find_value("ssl_certificate", $server);
 if (!$cert) {
         return &text('feat_esslcert');
         }
@@ -539,7 +539,7 @@ elsif (!-r $cert) {
         }
 
 # Make sure key exists
-my $key = &virtualmin_nginx::find_value("ssl_certificate_key", $server);
+my $key = &nginx::find_value("ssl_certificate_key", $server);
 if (!$key) {
         return &text('feat_esslkey');
         }
