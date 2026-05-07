@@ -155,6 +155,7 @@ use warnings "once";
 sub feature_setup
 {
 my ($d) = @_;
+return 1 if ($d->{'alias'});
 my $tmpl = &virtual_server::get_template($d->{'template'});
 $d->{'web_sslport'} = $d->{'web_sslport'} || $tmpl->{'web_sslport'} || 443;
 $d->{'web_ssl_samechain'} = 1;
@@ -291,6 +292,7 @@ if (!$d->{'creating'} && $generated && $d->{'auto_letsencrypt'} &&
 sub feature_modify
 {
 my ($d, $oldd) = @_;
+return 1 if ($d->{'alias'});
 
 &nginx::lock_all_config_files();
 my $changed = 0;
@@ -440,6 +442,7 @@ if ($changed) {
 sub feature_delete
 {
 my ($d) = @_;
+return 1 if ($d->{'alias'});
 &$virtual_server::first_print($text{'feat_delete'});
 &nginx::lock_all_config_files();
 my $server = &virtualmin_nginx::find_domain_server($d);
@@ -597,6 +600,9 @@ my ($d, $oldd) = @_;
 if (&indexof($module_name, @virtual_server::plugins_inactive) >= 0) {
 	# Not in auto mode
 	return undef;
+	}
+elsif ($d->{'alias'}) {
+	return 0;
 	}
 elsif ($d->{'virtualmin-nginx'}) {
 	if (!$oldd || !$oldd->{'virtualmin-nginx'}) {
