@@ -195,8 +195,8 @@ if ($err) {
 		&virtual_server::text('setup_esslkey', $err));
         return 0;
         }
-if ($d->{'ssl_ca'}) {
-        my $cadata = &read_file_contents($d->{'ssl_ca'});
+if ($d->{'ssl_chain'}) {
+        my $cadata = &read_file_contents($d->{'ssl_chain'});
         $err = &virtual_server::validate_cert_format($cadata, 'ca');
         if ($err) {
                 &$virtual_server::second_print(
