@@ -125,7 +125,8 @@ elsif ($virtual_server::config{'sni_support'}) {
 else {
 	# Neither .. but we can still do SSL, if there are no other domains
 	# with SSL on the same IP
-        my ($sslclash) = grep { $_->{'ip'} eq $d->{'ip'} &&
+        my ($sslclash) = grep { $d->{'ip'} &&
+				$_->{'ip'} eq $d->{'ip'} &&
                                 &virtual_server::domain_has_ssl($_) &&
                                 $_->{'id'} ne $d->{'id'} }
 			      &virtual_server::list_domains();
@@ -213,9 +214,11 @@ if ($err) {
 
 # Add listen line
 my @listen = &nginx::find("listen", $server);
-my ($old_ip4) = grep { $_->{'words'}->[0] eq
-		       $d->{'ip'}.":".$d->{'web_sslport'} } @listen;
-my $old_ip6;
+my ($old_ip4, $old_ip6);
+if ($d->{'ip'}) {
+	($old_ip4) = grep { $_->{'words'}->[0] eq
+			    $d->{'ip'}.":".$d->{'web_sslport'} } @listen;
+	}
 if ($d->{'ip6'}) {
 	($old_ip6) = grep { $_->{'words'}->[0] eq
 		       "[".$d->{'ip6'}."]:".$d->{'web_sslport'} } @listen;
@@ -236,7 +239,7 @@ if ($virtualmin_nginx::config{'listen_mode'} eq '0') {
 	}
 else {
 	# Add on specific IPs
-	if (!$old_ip4) {
+	if (!$old_ip4 && $d->{'ip'}) {
 		push(@listen, { 'name' => 'listen',
 				'words' => [ $d->{'ip'}.":".$d->{'web_sslport'},
 					     @sslopts ] });
@@ -327,6 +330,7 @@ if ($d->{'web_sslport'} != $oldd->{'web_sslport'}) {
 	}
 
 # If IP has changed, maybe clear ssl_same field for cert sharing
+# XXX can call Virtualmin API?
 if ($d->{'ip'} ne $oldd->{'ip'} && $oldd->{'ssl_same'}) {
         my ($sslclash) = grep { $_->{'ip'} eq $d->{'ip'} &&
                                 &virtual_server::domain_has_ssl($_) &&
@@ -406,6 +410,7 @@ if ($d->{'dom'} ne $oldd->{'dom'} &&
 # If anything has changed that would impact the per-domain SSL cert for
 # another server like Postfix or Webmin, re-set it up as long as it is supported
 # with the new settings
+# XXX call virtualmin API?
 if ($d->{'ip'} ne $oldd->{'ip'} ||
     $d->{'virt'} != $oldd->{'virt'} ||
     $d->{'dom'} ne $oldd->{'dom'} ||
@@ -466,7 +471,8 @@ foreach my $l (@listen) {
 		$l->{'words'}->[0]);
 	if (&indexof("ssl", @{$l->{'words'}}) >= 0 ||
 	    $lip && $lport &&
-	      $lip eq $d->{'ip'} && $lport == $d->{'web_sslport'}) {
+	    ($d->{'ip'} && $lip eq $d->{'ip'} || $d->{'ip6'} && $lip eq $d->{'ip6'}) &&
+	    $lport == $d->{'web_sslport'}) {
 		# Don't add to new list of listen directives
 		}
 	else {
@@ -507,17 +513,19 @@ return &virtualmin_nginx::text('feat_evalidate',
 
 # Check for IPs and port
 my @listen = &nginx::find_value("listen", $server);
-my $found = 0;
-foreach my $l (@listen) {
-	$found++ if ($l eq $d->{'ip'} &&
-		      $d->{'web_sslport'} == 80 ||
-		     $l =~ /^\Q$d->{'ip'}\E:(\d+)$/ &&
-		      $d->{'web_sslport'} == $1);
-	$found++ if ($l eq $d->{'web_sslport'} &&
-		     $virtualmin_nginx::config{'listen_mode'} eq '0');
+if ($d->{'ip'}) {
+	my $found = 0;
+	foreach my $l (@listen) {
+		$found++ if ($l eq $d->{'ip'} &&
+			      $d->{'web_sslport'} == 80 ||
+			     $l =~ /^\Q$d->{'ip'}\E:(\d+)$/ &&
+			      $d->{'web_sslport'} == $1);
+		$found++ if ($l eq $d->{'web_sslport'} &&
+			     $virtualmin_nginx::config{'listen_mode'} eq '0');
+		}
+	$found || return &virtualmin_nginx::text('feat_evalidateip',
+						 $d->{'ip'}, $d->{'web_sslport'});
 	}
-$found || return &virtualmin_nginx::text('feat_evalidateip',
-					 $d->{'ip'}, $d->{'web_sslport'});
 if ($d->{'virt6'}) {
 	my $found6 = 0;
 	foreach my $l (@listen) {
