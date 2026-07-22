@@ -125,27 +125,30 @@ elsif ($virtual_server::config{'sni_support'}) {
 else {
 	# Neither .. but we can still do SSL, if there are no other domains
 	# with SSL on the same IP
-        my ($sslclash) = grep { $d->{'ip'} &&
-				$_->{'ip'} eq $d->{'ip'} &&
-                                &virtual_server::domain_has_ssl($_) &&
-                                $_->{'id'} ne $d->{'id'} }
-			      &virtual_server::list_domains();
-        if ($sslclash && (!$oldd || !&virtual_server::domain_has_ssl($oldd))) {
-		# Clash .. but is the cert OK?
-		if (!&virtual_server::check_domain_certificate($d->{'dom'},
-							       $sslclash)) {
-                        my @certdoms = &virtual_server::list_domain_certificate(
+	if ($d->{'ip'}) {
+		my ($sslclash) = grep { $_->{'ip'} eq $d->{'ip'} &&
+					&virtual_server::domain_has_ssl($_) &&
+					$_->{'id'} ne $d->{'id'} }
+				      &virtual_server::list_domains();
+		if ($sslclash &&
+		    (!$oldd || !&virtual_server::domain_has_ssl($oldd))) {
+			# Clash .. but is the cert OK?
+			if (!&virtual_server::check_domain_certificate(
+					$d->{'dom'}, $sslclash)) {
+				my @certdoms =
+				    &virtual_server::list_domain_certificate(
 					$sslclash);
-                        return &virtual_server::text(
-				$sni ? 'setup_edepssl5sni'
-				     : 'setup_edepssl5', $d->{'ip'},
-                                join(", ", map { "<tt>$_</tt>" } @certdoms),
-                                $sslclash->{'dom'});
-                        }
-                else {
-                        return undef;
-                        }
-                }
+				return &virtual_server::text(
+				    $sni ? 'setup_edepssl5sni'
+					 : 'setup_edepssl5', $d->{'ip'},
+				    join(", ", map { "<tt>$_</tt>" } @certdoms),
+				    $sslclash->{'dom'});
+				}
+			else {
+				return undef;
+				}
+			}
+		}
 	return undef;
 	}
 }
