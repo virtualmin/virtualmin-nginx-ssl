@@ -413,25 +413,7 @@ if ($d->{'dom'} ne $oldd->{'dom'} &&
 # If anything has changed that would impact the per-domain SSL cert for
 # another server like Postfix or Webmin, re-set it up as long as it is supported
 # with the new settings
-# XXX call virtualmin API?
-if ($d->{'ip'} ne $oldd->{'ip'} ||
-    $d->{'virt'} != $oldd->{'virt'} ||
-    $d->{'dom'} ne $oldd->{'dom'} ||
-    $d->{'home'} ne $oldd->{'home'}) {
-        my %types = map { $_->{'id'}, $_ }
-		&virtual_server::list_service_ssl_cert_types();
-        foreach my $svc (&virtual_server::get_all_domain_service_ssl_certs($oldd)) {
-		no strict 'refs';
-                next if (!$svc->{'d'});
-                my $t = $types{$svc->{'id'}};
-                my $func = "virtual_server::sync_".$svc->{'id'}."_ssl_cert";
-                next if (!defined(&$func));
-                &$func($oldd, 0);
-                if ($t->{'dom'} || $d->{'virt'}) {
-                        &$func($d, 1);
-                        }
-                }
-        }
+&virtual_server::update_ssl_certs_on_change($d, $oldd);
 
 # Update DANE DNS records
 &virtual_server::sync_domain_tlsa_records($d);
