@@ -333,39 +333,7 @@ if ($d->{'web_sslport'} != $oldd->{'web_sslport'}) {
 	}
 
 # If IP has changed, maybe clear ssl_same field for cert sharing
-# XXX can call Virtualmin API?
-if ($d->{'ip'} ne $oldd->{'ip'} && $oldd->{'ssl_same'}) {
-        my ($sslclash) = grep { $_->{'ip'} eq $d->{'ip'} &&
-                                &virtual_server::domain_has_ssl($_) &&
-                                $_->{'id'} ne $d->{'id'} &&
-                                !$_->{'ssl_same'} }
-			      &virtual_server::list_domains();
-        my $oldsslclash = &virtual_server::get_domain($oldd->{'ssl_same'});
-        if ($sslclash && $oldd->{'ssl_same'} eq $sslclash->{'id'}) {
-		# No need to change
-		}
-	elsif ($sslclash && &virtual_server::check_domain_certificate(
-				$d->{'dom'}, $sslclash)) {
-                # New domain with same cert
-                $d->{'ssl_cert'} = $sslclash->{'ssl_cert'};
-                $d->{'ssl_key'} = $sslclash->{'ssl_key'};
-                $d->{'ssl_same'} = $sslclash->{'id'};
-                $d->{'ssl_chain'} = $sslclash->{'ssl_chain'};
-                }
-        else {
-                # No domain has the same cert anymore - copy the one from the
-                # old sslclash domain
-                $d->{'ssl_cert'} =
-			&virtual_server::default_certificate_file($d, 'cert');
-                $d->{'ssl_key'} =
-			&virtual_server::default_certificate_file($d, 'key');
-                &virtual_server::copy_source_dest_as_domain_user($d,
-                        $oldsslclash->{'ssl_cert'}, $d->{'ssl_cert'});
-                &virtual_server::copy_source_dest_as_domain_user($d,
-                        $oldsslclash->{'ssl_key'}, $d->{'ssl_key'});
-                delete($d->{'ssl_same'});
-                }
-        }
+&virtual_server::update_ssl_link_on_domain_change($d, $oldd);
 
 # Fix SSL cert file locations, if home has changed
 if ($d->{'home'} ne $oldd->{'home'}) {
@@ -375,40 +343,9 @@ if ($d->{'home'} ne $oldd->{'home'}) {
                 }
 	}
 
-# If domain name has changed, re-generate self-signed cert
-if ($d->{'dom'} ne $oldd->{'dom'} &&
-    &virtual_server::self_signed_cert($d) &&
-    !&virtual_server::check_domain_certificate($d->{'dom'}, $d)) {
-        &$virtual_server::first_print($virtual_server::text{'save_ssl11'});
-        my $info = &virtual_server::cert_info($d);
-        &lock_file($d->{'ssl_cert'});
-        &lock_file($d->{'ssl_key'});
-        my $err = &virtual_server::generate_self_signed_cert(
-                $d->{'ssl_cert'}, $d->{'ssl_key'},
-                undef,
-                1825,
-                $info->{'c'},
-                $info->{'st'},
-                $info->{'l'},
-                $info->{'o'},
-                $info->{'ou'},
-                "*.$d->{'dom'}",
-                $d->{'emailto'},
-                $info->{'alt'},
-                $d,
-                );
-        &unlock_file($d->{'ssl_key'});
-        &unlock_file($d->{'ssl_cert'});
-        if ($err) {
-                &$virtual_server::second_print(
-			&virtual_server::text('setup_eopenssl', $err));
-                }
-        else {
-                &$virtual_server::second_print(
-			$virtual_server::text{'setup_done'});
-                }
-	$changed++;
-        }
+# If domain name has changed, re-generate self-signed cert or re-request
+# let's encrypt cert
+&virtual_server::rerequest_cert_on_domain_change($d, $oldd);
 
 # If anything has changed that would impact the per-domain SSL cert for
 # another server like Postfix or Webmin, re-set it up as long as it is supported
