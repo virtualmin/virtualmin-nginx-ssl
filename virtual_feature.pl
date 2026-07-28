@@ -302,6 +302,7 @@ return 1 if ($d->{'alias'});
 
 &nginx::lock_all_config_files();
 my $changed = 0;
+my $need_restart = 0;
 
 # Update port, if changed
 if ($d->{'web_sslport'} != $oldd->{'web_sslport'}) {
@@ -330,6 +331,7 @@ if ($d->{'web_sslport'} != $oldd->{'web_sslport'}) {
 	&$virtual_server::second_print(
 		$virtual_server::text{'setup_done'});
 	$changed++;
+	$need_restart++;
 	}
 
 # If IP has changed, maybe clear ssl_same field for cert sharing
@@ -360,7 +362,7 @@ if ($d->{'home'} ne $oldd->{'home'}) {
 &nginx::unlock_all_config_files();
 if ($changed) {
 	&virtual_server::register_post_action(
-		\&virtualmin_nginx::print_apply_nginx);
+		\&virtualmin_nginx::print_apply_nginx, $need_restart);
 	}
 }
 
