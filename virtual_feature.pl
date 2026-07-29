@@ -172,6 +172,8 @@ my $generated = &virtual_server::generate_default_certificate($d);
 if (!$generated && !-r $d->{'ssl_cert'}) {
 	return 0;
 	}
+&virtual_server::refresh_ssl_cert_expiry($d);
+&virtual_server::sync_combined_ssl_cert($d);
 
 # Add to the non-SSL server block
 &$virtual_server::first_print($text{'feat_setup'});
