@@ -271,9 +271,17 @@ if ($d->{'ssl_chain'}) {
 		$d, 'ca', $d->{'ssl_chain'});
 	}
 
+# Enable HTTP/3 when selected in the Nginx server template
+my $http3 = &virtualmin_nginx::supports_http3() &&
+	    &virtualmin_nginx::template_http3_enabled($tmpl);
+if ($http3) {
+	&virtualmin_nginx::update_server_http3($d, $server, 1);
+	}
+
 &nginx::flush_config_file_lines();
 &nginx::unlock_all_config_files();
-&virtual_server::register_post_action(\&virtualmin_nginx::print_apply_nginx);
+&virtual_server::register_post_action(
+	\&virtualmin_nginx::print_apply_nginx, $http3);
 
 # Add cert in Webmin, Dovecot, etc..
 &virtual_server::enable_domain_service_ssl_certs($d);
@@ -330,6 +338,10 @@ if ($d->{'web_sslport'} != $oldd->{'web_sslport'}) {
 		push(@newlisten, { 'words' => \@w });
 		}
 	&nginx::save_directive($server, "listen", \@newlisten);
+	if (&virtualmin_nginx::server_http3_enabled($server)) {
+		$changed += &virtualmin_nginx::update_server_http3(
+			$d, $server, 1);
+		}
 	&$virtual_server::second_print(
 		$virtual_server::text{'setup_done'});
 	$changed++;
@@ -384,6 +396,11 @@ if (!$server) {
         return 0;
 	}
 
+# Remove HTTP/3 listeners and advertisements with SSL, using a full restart
+# when QUIC sockets were active so no old reuseport workers remain
+my $http3 = &virtualmin_nginx::server_http3_enabled($server);
+&virtualmin_nginx::update_server_http3($d, $server, 0);
+
 # Turn off ssl
 &nginx::save_directive($server, "ssl", [ ]);
 &nginx::save_directive($server, "ssl_certificate", [ ]);
@@ -409,7 +426,8 @@ foreach my $l (@listen) {
 
 &nginx::flush_config_file_lines();
 &nginx::unlock_all_config_files();
-&virtual_server::register_post_action(\&virtualmin_nginx::print_apply_nginx);
+&virtual_server::register_post_action(
+	\&virtualmin_nginx::print_apply_nginx, $http3);
 
 # If any other domains were using this one's SSL cert or key, break the linkage
 foreach my $od (&virtual_server::get_domain_by("ssl_same", $d->{'id'})) {
