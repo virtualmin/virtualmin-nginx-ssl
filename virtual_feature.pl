@@ -175,18 +175,9 @@ if (!$generated && !-r $d->{'ssl_cert'}) {
 &virtual_server::refresh_ssl_cert_expiry($d);
 &virtual_server::sync_combined_ssl_cert($d);
 
-# Add to the non-SSL server block
+# Validate certificates before locking the Nginx config, so validation
+# failures do not leave a lock held while other domain features continue.
 &$virtual_server::first_print($text{'feat_setup'});
-&nginx::lock_all_config_files();
-my $server = &virtualmin_nginx::find_domain_server($d);
-if (!$server) {
-	&nginx::unlock_all_config_files();
-        &$virtual_server::second_print(
-                &virtualmin_nginx::text('feat_efind', $d->{'dom'}));
-        return 0;
-	}
-
-# Double-check cert and key
 my $certdata = &read_file_contents($d->{'ssl_cert'});
 my $keydata = &read_file_contents($d->{'ssl_key'});
 my $err = &virtual_server::validate_cert_format($certdata, 'cert');
@@ -216,6 +207,16 @@ if ($err) {
 		&virtual_server::text('setup_esslmatch', $err));
         return 0;
         }
+
+# Read the current server after locking, before adding its SSL listeners.
+&nginx::lock_all_config_files();
+my $server = &virtualmin_nginx::find_domain_server($d);
+if (!$server) {
+	&nginx::unlock_all_config_files();
+        &$virtual_server::second_print(
+                &virtualmin_nginx::text('feat_efind', $d->{'dom'}));
+        return 0;
+	}
 
 # Add listen line
 my @listen = &nginx::find("listen", $server);
@@ -319,6 +320,7 @@ if ($d->{'web_sslport'} != $oldd->{'web_sslport'}) {
 	&$virtual_server::first_print($text{'feat_modifyport'});
 	my $server = &virtualmin_nginx::find_domain_server($d);
 	if (!$server) {
+		&nginx::unlock_all_config_files();
 		&$virtual_server::second_print(
 			&virtualmin_nginx::text('feat_efind', $d->{'dom'}));
 		return 0;
