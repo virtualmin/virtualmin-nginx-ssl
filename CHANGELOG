@@ -1,0 +1,6 @@
+---- Changes in 3.1.0 ----
+Added HTTP/3 support to the Nginx SSL lifecycle.
+Improved SSL handling for domains without an IP address and for IP or SSL port changes.
+Kept certificate expiry data current and validated SSL chain files before use.
+---- Changes since 3.1.0 ----
+Fixed concurrent SSL updates using stale Nginx configuration data and leaking locks on errors.
